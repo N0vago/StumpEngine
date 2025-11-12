@@ -1,6 +1,7 @@
 #include "STShader.h"
 #include <iostream>
 #include <vector>
+
 // Reads a text file and outputs a string with everything in the text file
 std::string get_file_contents(const char* filename)
 {
@@ -35,6 +36,7 @@ STShader::STShader(const char* vertexFile, const char* fragmentFile)
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
 	// Compile the Vertex Shader into machine code
 	glCompileShader(vertexShader);
+
 
 	CompileErrors(vertexShader, "VERTEX");
 

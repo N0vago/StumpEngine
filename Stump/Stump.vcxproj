@@ -128,6 +128,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Matrix3x3.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="STCamera.cpp" />
     <ClCompile Include="STElementsBufferObj.cpp" />
@@ -138,9 +144,16 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="STVertexArrayObj.cpp" />
     <ClCompile Include="STVertexBufferObj.cpp" />
+    <ClCompile Include="Matrix3x4.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ReentrantLock32.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Matrix3x3.h" />
+    <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="STCamera.h" />
     <ClInclude Include="STElementsBufferObj.h" />
     <ClInclude Include="STMesh.h" />
@@ -149,6 +162,9 @@
     <ClInclude Include="STTexture.h" />
     <ClInclude Include="STVertexArrayObj.h" />
     <ClInclude Include="STVertexBufferObj.h" />
+    <ClInclude Include="Matrix3x4.h" />
+    <ClInclude Include="Typedefs.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />

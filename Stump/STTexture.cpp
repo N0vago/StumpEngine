@@ -70,6 +70,7 @@ STTexture::STTexture(const char* image, const char* textureType, GLenum slot) {
 
 void STTexture::texUnit(STShader& shader, const char* uniform, GLuint unit) {
 
+	
     GLuint tex0 = glGetUniformLocation(shader.ID, uniform);
 
     shader.Activate();

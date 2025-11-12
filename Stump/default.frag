@@ -30,8 +30,8 @@ vec4 pointLight()
 
 	
 	float dist = length(lightVec);
-	float a = 3.0;
-	float b = 0.7;
+	float a = 0.5;
+	float b = 0.1;
 	float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
 
 	
@@ -45,7 +45,7 @@ vec4 pointLight()
 	
 	float specularLight = 0.50f;
 	vec3 viewDirection = normalize(camPos - crntPos);
-	vec3 reflectionDirection = reflect(-lightDirection, normal);
+	vec3 reflectionDirection = reflect(lightDirection, normal);
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
@@ -102,5 +102,5 @@ vec4 spotLight()
 void main()
 {
 	// outputs final color
-	FragColor = direcLight();
+	FragColor = pointLight();
 }

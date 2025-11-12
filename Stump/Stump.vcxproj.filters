@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -19,81 +11,137 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{7a5cf3fe-1899-4fc1-a357-0530bc1ac60d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\External">
-      <UniqueIdentifier>{b7685ec4-dcfe-439b-81a6-30620074d30b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Main">
-      <UniqueIdentifier>{c2e05900-79f9-4f51-8a6a-a4834cecea45}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Models">
       <UniqueIdentifier>{381d8ba8-cc59-4e4d-bcdb-b15d6b338a2a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\Models\bunny">
       <UniqueIdentifier>{3eb5eef3-8708-48c2-8d16-cab8db346807}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code Base">
+      <UniqueIdentifier>{84811d44-9d29-4121-9527-8cdca1af0af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Buffers">
+      <UniqueIdentifier>{aa5eac48-baf2-4d0e-b8ba-5c02d4404a9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Object">
+      <UniqueIdentifier>{091f5e46-ec53-4391-a8c3-fdab2f2b91f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\External">
+      <UniqueIdentifier>{b7685ec4-dcfe-439b-81a6-30620074d30b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Main">
+      <UniqueIdentifier>{c2e05900-79f9-4f51-8a6a-a4834cecea45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Math">
+      <UniqueIdentifier>{e75eb386-75c5-4f85-af9c-7342b34c03ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="STShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STVertexBufferObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STElementsBufferObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STVertexArrayObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="STMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stb.cpp">
-      <Filter>Source Files\External</Filter>
+      <Filter>Code Base\External</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
-      <Filter>Source Files\External</Filter>
+      <Filter>Code Base\External</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files\Main</Filter>
+      <Filter>Code Base\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="STElementsBufferObj.cpp">
+      <Filter>Code Base\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="STVertexArrayObj.cpp">
+      <Filter>Code Base\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="STVertexBufferObj.cpp">
+      <Filter>Code Base\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="STCamera.cpp">
+      <Filter>Code Base\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="STMesh.cpp">
+      <Filter>Code Base\Object</Filter>
     </ClCompile>
     <ClCompile Include="STModel.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Code Base\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="STShader.cpp">
+      <Filter>Code Base\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="STTexture.cpp">
+      <Filter>Code Base\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Math.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix3x3.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix3x4.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4x4.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Code Base\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ReentrantLock32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="STShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="STVertexBufferObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="STElementsBufferObj.h">
-      <Filter>Header Files</Filter>
+      <Filter>Code Base\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="STVertexArrayObj.h">
-      <Filter>Header Files</Filter>
+      <Filter>Code Base\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="STElementsBufferObj.h">
+      <Filter>Code Base\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="STTexture.h">
-      <Filter>Header Files</Filter>
+      <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="STCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="STMesh.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="STShader.h">
+      <Filter>Code Base\Object</Filter>
     </ClInclude>
     <ClInclude Include="STModel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Code Base\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="STMesh.h">
+      <Filter>Code Base\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="STCamera.h">
+      <Filter>Code Base\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Math.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix3x3.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Typedefs.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix3x4.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Code Base\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +156,12 @@
     </None>
     <None Include="Models\bunny\scene.gltf">
       <Filter>Resource Files\Models\bunny</Filter>
+    </None>
+    <None Include="light.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="light.vert">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

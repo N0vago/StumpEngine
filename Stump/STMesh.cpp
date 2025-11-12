@@ -53,7 +53,7 @@ void STMesh::Draw(
 		}
 		textures[i].texUnit(shader, (type + num).c_str(), i);
 		textures[i].Bind();
-	}
+	}	
 	// Take care of the camera Matrix
 	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 	camera.Matrix(shader, "camMatrix");
@@ -67,6 +67,8 @@ void STMesh::Draw(
 	trans = glm::translate(trans, translation);
 	rot = glm::mat4_cast(rotation);
 	sca = glm::scale(sca, scale);
+
+	
 
 	// Push the matrices to the vertex shader
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "translation"), 1, GL_FALSE, glm::value_ptr(trans));
