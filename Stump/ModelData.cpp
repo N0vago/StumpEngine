@@ -1,26 +1,17 @@
-#include "STModel.h"
+#include "ModelData.h"
 
-STModel::STModel(const char* file)
+
+ModelData::ModelData(const char* filePath)
 {
-	std::string text = get_file_contents(file);
+	std::string text = get_file_contents(filePath);
 	JSON = json::parse(text);
-
-	STModel::file = file;
+	ModelData::file = filePath;
 	data = GetData();
-
 	TraverseNode(0);
 }
 
-void STModel::Draw(STShader& shader, STCamera& camera)
-{
-	// Go over all meshes and draw each one
-	for (unsigned int i = 0; i < meshes.size(); i++)
-	{
-		meshes[i].STMesh::Draw(shader, camera, matricesMeshes[i]);
-	}
-}
 
-void STModel::LoadMesh(unsigned int indMesh)
+Mesh ModelData::LoadMesh(unsigned int indMesh)
 {
 	// Get all accessor indices
 	unsigned int posAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["POSITION"];
@@ -30,37 +21,35 @@ void STModel::LoadMesh(unsigned int indMesh)
 
 	// Use accessor indices to get all vertices components
 	std::vector<float> posVec = GetFloats(JSON["accessors"][posAccInd]);
-	std::vector<glm::vec3> positions = GroupFloatsVec3(posVec);
+	std::vector<Vector3> positions = GroupFloatsVec3(posVec);
 	std::vector<float> normalVec = GetFloats(JSON["accessors"][normalAccInd]);
-	std::vector<glm::vec3> normals = GroupFloatsVec3(normalVec);
+	std::vector<Vector3> normals = GroupFloatsVec3(normalVec);
 	std::vector<float> texVec = GetFloats(JSON["accessors"][texAccInd]);
-	std::vector<glm::vec2> texUVs = GroupFloatsVec2(texVec);
+	std::vector<Vector2> texUVs = GroupFloatsVec2(texVec);
 
 	// Combine all the vertex components and also get the indices and textures
-	std::vector<STVertex> vertices = AssembleVertices(positions, normals, texUVs);
+	std::vector<Vertex> vertices = AssembleVertices(positions, normals, texUVs);
 	std::vector<GLuint> indices = GetIndices(JSON["accessors"][indAccInd]);
-	std::vector<STTexture> textures = GetTextures();
+	std::vector<Texture> textures = GetTextures();
 
 	// Combine the vertices, indices, and textures into a mesh
-	meshes.push_back(STMesh(vertices, indices, textures));
+	return Mesh(vertices, indices, textures);
 }
 
-void STModel::TraverseNode(unsigned int nextNode, glm::mat4 matrix)
+void ModelData::TraverseNode(unsigned int nextNode, Matrix3x4 matrix)
 {
-	// Current node
 	json node = JSON["nodes"][nextNode];
 
-	// Get translation if it exists
-	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+	Vector3 translation = Vector3(0.0f, 0.0f, 0.0f);
 	if (node.find("translation") != node.end())
 	{
 		float transValues[3];
 		for (unsigned int i = 0; i < node["translation"].size(); i++)
 			transValues[i] = (node["translation"][i]);
-		translation = glm::make_vec3(transValues);
+		translation = Vector3(transValues[0], transValues[1], transValues[2]);
 	}
-	// Get quaternion if it exists
-	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+	Quaternion rotation = Quaternion();
 	if (node.find("rotation") != node.end())
 	{
 		float rotValues[4] =
@@ -70,52 +59,53 @@ void STModel::TraverseNode(unsigned int nextNode, glm::mat4 matrix)
 			node["rotation"][1],
 			node["rotation"][2]
 		};
-		rotation = glm::make_quat(rotValues);
+		rotation = Quaternion(rotValues[0], rotValues[1], rotValues[2], rotValues[3]);
 	}
-	// Get scale if it exists
-	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
 	if (node.find("scale") != node.end())
 	{
 		float scaleValues[3];
 		for (unsigned int i = 0; i < node["scale"].size(); i++)
 			scaleValues[i] = (node["scale"][i]);
-		scale = glm::make_vec3(scaleValues);
+		scale = Vector3(scaleValues[0], scaleValues[1], scaleValues[2]);
 	}
-	// Get matrix if it exists
-	glm::mat4 matNode = glm::mat4(1.0f);
+
+	Matrix3x4 matNode = Matrix3x4();
 	if (node.find("matrix") != node.end())
 	{
-		float matValues[16];
-		for (unsigned int i = 0; i < node["matrix"].size(); i++)
-			matValues[i] = (node["matrix"][i]);
-		matNode = glm::make_mat4(matValues);
+		float matValues[4][4];
+		for (unsigned int i = 0; i < node["matrix"].size(); i++) {
+			for (unsigned int j = 0; j < node["matrix"][i].size(); j++) {
+
+				std::cout << node["matrix"][i][j] << " ";
+				matValues[i][j] = (node["matrix"][i][j]);
+			}
+			std::cout << std::endl;
+		}
+		matNode.set(
+			matValues[0][0], matValues[0][1], matValues[0][2],
+			matValues[1][0], matValues[1][1], matValues[1][2],
+			matValues[2][0], matValues[2][1], matValues[2][2],
+			matValues[3][0], matValues[3][1], matValues[3][2]
+		);
 	}
 
-	// Initialize matrices
-	glm::mat4 trans = glm::mat4(1.0f);
-	glm::mat4 rot = glm::mat4(1.0f);
-	glm::mat4 sca = glm::mat4(1.0f);
+	Matrix3x4 trans = Matrix3x4();
+	Matrix3x4 rot = Matrix3x4();
+	Matrix3x4 sca = Matrix3x4();
 
-	// Use translation, rotation, and scale to change the initialized matrices
-	trans = glm::translate(trans, translation);
-	rot = glm::mat4_cast(rotation);
-	sca = glm::scale(sca, scale);
+	trans.Translate(translation);
+	rot.Rotate(rotation);
+	sca.Scale(scale);
 
-	// Multiply all matrices together
-	glm::mat4 matNextNode = matrix * matNode * trans * rot * sca;
+	Matrix3x4 matNextNode = matrix * matNode * trans * rot * sca;
 
-	// Check if the node contains a mesh and if it does load it
 	if (node.find("mesh") != node.end())
 	{
-		translationsMeshes.push_back(translation);
-		rotationsMeshes.push_back(rotation);
-		scalesMeshes.push_back(scale);
-		matricesMeshes.push_back(matNextNode);
-
-		LoadMesh(node["mesh"]);
+		meshes.push_back(std::pair<Mesh, Matrix3x4>(LoadMesh(node["mesh"]), matNextNode));
 	}
 
-	// Check if the node has children, and if it does, apply this function to them with the matNextNode
 	if (node.find("children") != node.end())
 	{
 		for (unsigned int i = 0; i < node["children"].size(); i++)
@@ -124,7 +114,7 @@ void STModel::TraverseNode(unsigned int nextNode, glm::mat4 matrix)
 }
 
 
-std::vector<unsigned char> STModel::GetData()
+std::vector<unsigned char> ModelData::GetData()
 {
 	std::string bytesText;
 	std::string uri = JSON["buffers"][0]["uri"];
@@ -137,7 +127,7 @@ std::vector<unsigned char> STModel::GetData()
 	return bytes;
 }
 
-std::vector<float> STModel::GetFloats(json accessor)
+std::vector<float> ModelData::GetFloats(json accessor)
 {
 	std::vector<float> floatVec;
 
@@ -173,7 +163,7 @@ std::vector<float> STModel::GetFloats(json accessor)
 	return floatVec;
 }
 
-std::vector<GLuint> STModel::GetIndices(json accessor)
+std::vector<GLuint> ModelData::GetIndices(json accessor)
 {
 	std::vector<GLuint> indices;
 
@@ -223,9 +213,9 @@ std::vector<GLuint> STModel::GetIndices(json accessor)
 	return indices;
 }
 
-std::vector<STTexture> STModel::GetTextures()
+std::vector<Texture> ModelData::GetTextures()
 {
-	std::vector<STTexture> textures;
+	std::vector<Texture> textures;
 
 	std::string fileStr = std::string(file);
 	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
@@ -254,7 +244,7 @@ std::vector<STTexture> STModel::GetTextures()
 			// Load diffuse texture
 			if (texPath.find("baseColor") != std::string::npos)
 			{
-				STTexture diffuse = STTexture((fileDirectory + texPath).c_str(), "diffuse", loadedTex.size());
+				Texture diffuse = Texture((fileDirectory + texPath).c_str(), "diffuse", loadedTex.size());
 				textures.push_back(diffuse);
 				loadedTex.push_back(diffuse);
 				loadedTexName.push_back(texPath);
@@ -262,7 +252,7 @@ std::vector<STTexture> STModel::GetTextures()
 			// Load specular texture
 			else if (texPath.find("metallicRoughness") != std::string::npos)
 			{
-				STTexture specular = STTexture((fileDirectory + texPath).c_str(), "specular", loadedTex.size());
+				Texture specular = Texture((fileDirectory + texPath).c_str(), "specular", loadedTex.size());
 				textures.push_back(specular);
 				loadedTex.push_back(specular);
 				loadedTexName.push_back(texPath);
@@ -273,23 +263,23 @@ std::vector<STTexture> STModel::GetTextures()
 	return textures;
 }
 
-std::vector<STVertex> STModel::AssembleVertices
+std::vector<Vertex> ModelData::AssembleVertices
 (
-	std::vector<glm::vec3> positions,
-	std::vector<glm::vec3> normals,
-	std::vector<glm::vec2> texUVs
+	std::vector<Vector3> positions,
+	std::vector<Vector3> normals,
+	std::vector<Vector2> texUVs
 )
 {
-	std::vector<STVertex> vertices;
+	std::vector<Vertex> vertices;
 	for (int i = 0; i < positions.size(); i++)
 	{
 		vertices.push_back
 		(
-			STVertex
+			Vertex
 			{
 				positions[i],
 				normals[i],
-				glm::vec3(1.0f, 1.0f, 1.0f),
+				Vector3(1.0f, 1.0f, 1.0f),
 				texUVs[i]
 			}
 		);
@@ -297,14 +287,14 @@ std::vector<STVertex> STModel::AssembleVertices
 	return vertices;
 }
 
-std::vector<glm::vec2> STModel::GroupFloatsVec2(std::vector<float> floatVec)
+std::vector<Vector2> ModelData::GroupFloatsVec2(std::vector<float> floatVec)
 {
 	const unsigned int floatsPerVector = 2;
 
-	std::vector<glm::vec2> vectors;
+	std::vector<Vector2> vectors;
 	for (unsigned int i = 0; i < floatVec.size(); i += floatsPerVector)
 	{
-		vectors.push_back(glm::vec2(0, 0));
+		vectors.push_back(Vector2(0, 0));
 
 		for (unsigned int j = 0; j < floatsPerVector; j++)
 		{
@@ -313,14 +303,14 @@ std::vector<glm::vec2> STModel::GroupFloatsVec2(std::vector<float> floatVec)
 	}
 	return vectors;
 }
-std::vector<glm::vec3> STModel::GroupFloatsVec3(std::vector<float> floatVec)
+std::vector<Vector3> ModelData::GroupFloatsVec3(std::vector<float> floatVec)
 {
 	const unsigned int floatsPerVector = 3;
 
-	std::vector<glm::vec3> vectors;
+	std::vector<Vector3> vectors;
 	for (unsigned int i = 0; i < floatVec.size(); i += floatsPerVector)
 	{
-		vectors.push_back(glm::vec3(0, 0, 0));
+		vectors.push_back(Vector3(0, 0, 0));
 
 		for (unsigned int j = 0; j < floatsPerVector; j++)
 		{
@@ -329,14 +319,14 @@ std::vector<glm::vec3> STModel::GroupFloatsVec3(std::vector<float> floatVec)
 	}
 	return vectors;
 }
-std::vector<glm::vec4> STModel::GroupFloatsVec4(std::vector<float> floatVec)
+std::vector<Vector4> ModelData::GroupFloatsVec4(std::vector<float> floatVec)
 {
 	const unsigned int floatsPerVector = 4;
 
-	std::vector<glm::vec4> vectors;
+	std::vector<Vector4> vectors;
 	for (unsigned int i = 0; i < floatVec.size(); i += floatsPerVector)
 	{
-		vectors.push_back(glm::vec4(0, 0, 0, 0));
+		vectors.push_back(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 
 		for (unsigned int j = 0; j < floatsPerVector; j++)
 		{

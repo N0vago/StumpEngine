@@ -35,6 +35,9 @@
     <Filter Include="Code Base\Math">
       <UniqueIdentifier>{e75eb386-75c5-4f85-af9c-7342b34c03ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code Base\Utilities">
+      <UniqueIdentifier>{036d30f0-d005-4016-9b50-bb27922ec381}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb.cpp">
@@ -46,28 +49,28 @@
     <ClCompile Include="main.cpp">
       <Filter>Code Base\Main</Filter>
     </ClCompile>
-    <ClCompile Include="STElementsBufferObj.cpp">
+    <ClCompile Include="ElementsBufferObj.cpp">
       <Filter>Code Base\Buffers</Filter>
     </ClCompile>
-    <ClCompile Include="STVertexArrayObj.cpp">
+    <ClCompile Include="VertexArrayObj.cpp">
       <Filter>Code Base\Buffers</Filter>
     </ClCompile>
-    <ClCompile Include="STVertexBufferObj.cpp">
+    <ClCompile Include="VertexBufferObj.cpp">
       <Filter>Code Base\Buffers</Filter>
     </ClCompile>
-    <ClCompile Include="STCamera.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="STMesh.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="STModel.cpp">
+    <ClCompile Include="Model.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="STShader.cpp">
+    <ClCompile Include="Shader.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="STTexture.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp" />
@@ -92,30 +95,39 @@
     <ClCompile Include="Plane.cpp">
       <Filter>Code Base\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector4.cpp">
+      <Filter>Code Base\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelData.cpp">
+      <Filter>Code Base\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="STVertexBufferObj.h">
+    <ClInclude Include="VertexBufferObj.h">
       <Filter>Code Base\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="STVertexArrayObj.h">
+    <ClInclude Include="VertexArrayObj.h">
       <Filter>Code Base\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="STElementsBufferObj.h">
+    <ClInclude Include="ElementsBufferObj.h">
       <Filter>Code Base\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="STTexture.h">
+    <ClInclude Include="Texture.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="STShader.h">
+    <ClInclude Include="Shader.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="STModel.h">
+    <ClInclude Include="Model.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="STMesh.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="STCamera.h">
+    <ClInclude Include="Camera.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object.h" />
@@ -142,6 +154,15 @@
     </ClInclude>
     <ClInclude Include="Plane.h">
       <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Code Base\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelData.h">
+      <Filter>Code Base\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

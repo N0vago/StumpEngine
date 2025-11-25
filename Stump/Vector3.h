@@ -14,11 +14,11 @@ struct Vector3{
 		};
 	num_fd coord[3];
 	};
-	Vector3() : x(0.0f), y(0.0f), z(0.0f)  {}
+	Vector3();
 
-	Vector3(num_fd p_x, num_fd p_y, num_fd p_z) : x(p_x), y(p_y), z(p_z) {}
+	Vector3(num_fd p_x, num_fd p_y, num_fd p_z);
 
-	Vector3(const Vector3& p_other) : x(p_other.x), y(p_other.y), z(p_other.z) {}
+	Vector3(const Vector3& p_other);
 
 	const num_fd& operator[](int index) const {
 		return coord[index];
@@ -54,14 +54,6 @@ struct Vector3{
 	void Snap(Vector3 p_val);
 	Vector3 Snapped(Vector3 p_val) const;
 
-	/*void rotate(const Vector3& p_axis, num_fd p_angle);
-	Vector3 rotated(const Vector3& p_axis, num_fd p_angle) const;
-	Vector3 cubic_interpolate(const Vector3& p_b, const Vector3& p_pre_a, const Vector3& p_post_b, num_fd p_weight) const;
-	Vector3 cubic_interpolaten(const Vector3& p_b, const Vector3& p_pre_a, const Vector3& p_post_b, num_fd p_weight) const;
-	Vector3 move_toward(const Vector3& p_to, const num_fd p_delta) const;
-
-	/* Static Methods between 2 vector3s */
-
 	Vector3 Slerp(const Vector3& p_to, num_fd p_weight) const;
 	Vector3 LinearInterpolate(const Vector3& p_to, num_fd p_weight) const;
 
@@ -84,6 +76,8 @@ struct Vector3{
 	num_fd AngleTo(const Vector3& p_to) const;
 	num_fd SignedAngleTo(const Vector3& p_to, const Vector3& p_axis) const;
 	Vector3 DirectionTo(const Vector3& p_to) const;
+	void RotateAroundAxis(const Vector3& p_axis, num_fd p_angle);
+	Vector3 RotatedAroundAxis(const Vector3& p_axis, num_fd p_angle) const;
 
 	Vector3 Slide(const Vector3& p_normal) const;
 	Vector3 Bounce(const Vector3& p_normal) const;
@@ -91,8 +85,6 @@ struct Vector3{
 
 	bool IsEqualApprox(const Vector3& p_v) const;
 	bool IsEqualApprox(const Vector3& p_v, num_fd p_tolerance) const;
-
-	/* Operators */
 
 	Vector3& operator+=(const Vector3& p_v);
 	Vector3 operator+(const Vector3& p_v) const;

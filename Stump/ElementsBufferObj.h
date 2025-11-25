@@ -4,12 +4,12 @@
 #include <glad/glad.h>
 #include <vector>
 
-class STElementsBufferObj
+class ElementsBufferObj
 {
 public:
 	GLuint ID;
 
-	STElementsBufferObj(std::vector<GLuint>& indices);
+	ElementsBufferObj(std::vector<GLuint>& indices);
 
 	void Bind();
 

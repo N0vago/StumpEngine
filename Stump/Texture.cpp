@@ -1,7 +1,7 @@
-#include "STTexture.h"
+#include "Texture.h"
 
 
-STTexture::STTexture(const char* image, const char* textureType, GLenum slot) {
+Texture::Texture(const char* image, const char* textureType, GLenum slot) {
 
     type = textureType;
     
@@ -68,7 +68,7 @@ STTexture::STTexture(const char* image, const char* textureType, GLenum slot) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void STTexture::texUnit(STShader& shader, const char* uniform, GLuint unit) {
+void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit) {
 
 	
     GLuint tex0 = glGetUniformLocation(shader.ID, uniform);
@@ -78,16 +78,16 @@ void STTexture::texUnit(STShader& shader, const char* uniform, GLuint unit) {
     glUniform1i(tex0, unit);
 }
 
-void STTexture::Bind() {
+void Texture::Bind() {
     glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(GL_TEXTURE_2D, ID);
 }
 
-void STTexture::Unbind() {
+void Texture::Unbind() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void STTexture::Delete() {
+void Texture::Delete() {
     glDeleteTextures(1, &ID);
 }

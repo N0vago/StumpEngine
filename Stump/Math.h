@@ -43,7 +43,7 @@ public:
 	static float Atanf(float radians) { return std::atanf(radians); }
 
 	static double Atan2(double p_y, double p_x) { return ::atan2(p_y, p_x); }
-	static float Atan2(float p_y, float p_x) { return ::atan2f(p_y, p_x); }
+	static float Atan2f(float p_y, float p_x) { return ::atan2f(p_y, p_x); }
 
 	static double ToRadians(double degrees) { return degrees * (PI / 180.0); }
 	static float ToRadiansf(float degrees) { return degrees * (PI / 180.0f); }

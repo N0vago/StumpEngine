@@ -1,5 +1,68 @@
 #include "Matrix4x4.h"
 
+Matrix4x4::Matrix4x4() {
+	SetIdentity();
+}
+
+Matrix4x4::Matrix4x4(const Matrix3x4& p_transform) {
+	const Matrix3x4& tr = p_transform;
+	num_fd* m = &matrix[0][0];
+
+	m[0] = tr.mat3.elements[0][0];
+	m[1] = tr.mat3.elements[1][0];
+	m[2] = tr.mat3.elements[2][0];
+	m[3] = 0.0;
+	m[4] = tr.mat3.elements[0][1];
+	m[5] = tr.mat3.elements[1][1];
+	m[6] = tr.mat3.elements[2][1];
+	m[7] = 0.0;
+	m[8] = tr.mat3.elements[0][2];
+	m[9] = tr.mat3.elements[1][2];
+	m[10] = tr.mat3.elements[2][2];
+	m[11] = 0.0;
+	m[12] = tr.origin.x;
+	m[13] = tr.origin.y;
+	m[14] = tr.origin.z;
+	m[15] = 1.0;
+}
+
+Matrix4x4::Matrix4x4(num_fd xx, num_fd xy, num_fd xz, num_fd xw, num_fd yx, num_fd yy, num_fd yz, num_fd yw, num_fd zx, num_fd zy, num_fd zz, num_fd zw, num_fd wx, num_fd wy, num_fd wz, num_fd ww)
+{
+	matrix[0][0] = xx; matrix[0][1] = xy; matrix[0][2] = xz; matrix[0][3] = xw;
+	matrix[1][0] = yx; matrix[1][1] = yy; matrix[1][2] = yz; matrix[1][3] = yw;
+	matrix[2][0] = zx; matrix[2][1] = zy; matrix[2][2] = zz; matrix[2][3] = zw;
+	matrix[3][0] = wx; matrix[3][1] = wy; matrix[3][2] = wz; matrix[3][3] = ww;
+}
+
+Matrix4x4::Matrix4x4(num_fd elements[4][4])
+{
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix[i][j] = elements[i][j];
+		}
+	}
+}
+
+Matrix4x4::~Matrix4x4() {
+}
+
+void Matrix4x4::Set(num_fd xx, num_fd xy, num_fd xz, num_fd xw, num_fd yx, num_fd yy, num_fd yz, num_fd yw, num_fd zx, num_fd zy, num_fd zz, num_fd zw, num_fd wx, num_fd wy, num_fd wz, num_fd ww)
+{
+	matrix[0][0] = xx; matrix[0][1] = xy; matrix[0][2] = xz; matrix[0][3] = xw;
+	matrix[1][0] = yx; matrix[1][1] = yy; matrix[1][2] = yz; matrix[1][3] = yw;
+	matrix[2][0] = zx; matrix[2][1] = zy; matrix[2][2] = zz; matrix[2][3] = zw;
+	matrix[3][0] = wx; matrix[3][1] = wy; matrix[3][2] = wz; matrix[3][3] = ww;
+}
+
+void Matrix4x4::Set(const num_fd elements[4][4])
+{
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix[i][j] = elements[i][j];
+		}
+	}
+}
+
 void Matrix4x4::SetIdentity() {
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
@@ -16,9 +79,29 @@ void Matrix4x4::SetZero() {
 	}
 }
 
+void Matrix4x4::SetLookAt(const Vector3& p_eye, const Vector3& p_target, const Vector3& p_up) {
+	Vector3 v_x, v_y, v_z;
+	v_z = (p_eye - p_target).Normalized();
+	v_x = p_up.Cross(v_z).Normalized();
+	v_y = v_z.Cross(v_x);
+	SetIdentity();
+	matrix[0][0] = v_x.x;
+	matrix[1][0] = v_x.y;
+	matrix[2][0] = v_x.z;
+	matrix[0][1] = v_y.x;
+	matrix[1][1] = v_y.y;
+	matrix[2][1] = v_y.z;
+	matrix[0][2] = v_z.x;
+	matrix[1][2] = v_z.y;
+	matrix[2][2] = v_z.z;
+	matrix[3][0] = -v_x.Dot(p_eye);
+	matrix[3][1] = -v_y.Dot(p_eye);
+	matrix[3][2] = -v_z.Dot(p_eye);
+}
+
 void Matrix4x4::SetPerspective(num_fd p_fovy_degrees, num_fd p_aspect, num_fd p_near, num_fd p_far, bool p_flip_fov) {
 	if (p_flip_fov) {
-		p_fovy_degrees = get_fovy(p_fovy_degrees, 1.0 / p_aspect);
+		p_fovy_degrees = GetFOVy(p_fovy_degrees, 1.0 / p_aspect);
 	}
 
 	num_fd sine, cotangent, deltaZ;
@@ -142,16 +225,6 @@ num_fd Matrix4x4::GetZNear() const {
 
 	new_plane.Normalize();
 	return new_plane.d;
-}
-
-glm::mat4 Matrix4x4::GetGlmMat4() const {
-	glm::mat4 res;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			res[i][j] = matrix[i][j];
-		}
-	}
-	return res;
 }
 
 Vector3 Matrix4x4::GetViewportHalfExtents() const {
@@ -393,9 +466,15 @@ void Matrix4x4::Invert() {
 	}
 }
 
-Matrix4x4::Matrix4x4() {
-	SetIdentity();
+Vector3 Matrix4x4::XForm(const Vector3& p_vec3) const {
+	Vector3 ret;
+	ret.x = matrix[0][0] * p_vec3.x + matrix[1][0] * p_vec3.y + matrix[2][0] * p_vec3.z + matrix[3][0];
+	ret.y = matrix[0][1] * p_vec3.x + matrix[1][1] * p_vec3.y + matrix[2][1] * p_vec3.z + matrix[3][1];
+	ret.z = matrix[0][2] * p_vec3.x + matrix[1][2] * p_vec3.y + matrix[2][2] * p_vec3.z + matrix[3][2];
+	num_fd w = matrix[0][3] * p_vec3.x + matrix[1][3] * p_vec3.y + matrix[2][3] * p_vec3.z + matrix[3][3];
+	return ret / w;
 }
+
 
 Matrix4x4 Matrix4x4::operator*(const Matrix4x4& p_matrix) const {
 	Matrix4x4 new_matrix;
@@ -497,47 +576,3 @@ Matrix4x4::operator Matrix3x4() const {
 	return tr;
 }
 
-Matrix4x4::Matrix4x4(const Matrix3x4& p_transform) {
-	const Matrix3x4& tr = p_transform;
-	num_fd* m = &matrix[0][0];
-
-	m[0] = tr.mat3.elements[0][0];
-	m[1] = tr.mat3.elements[1][0];
-	m[2] = tr.mat3.elements[2][0];
-	m[3] = 0.0;
-	m[4] = tr.mat3.elements[0][1];
-	m[5] = tr.mat3.elements[1][1];
-	m[6] = tr.mat3.elements[2][1];
-	m[7] = 0.0;
-	m[8] = tr.mat3.elements[0][2];
-	m[9] = tr.mat3.elements[1][2];
-	m[10] = tr.mat3.elements[2][2];
-	m[11] = 0.0;
-	m[12] = tr.origin.x;
-	m[13] = tr.origin.y;
-	m[14] = tr.origin.z;
-	m[15] = 1.0;
-}
-
-Matrix4x4::Matrix4x4(glm::mat4 p_mat4) {
-	num_fd* m = &matrix[0][0];
-	m[0] = p_mat4[0][0];
-	m[1] = p_mat4[1][0];
-	m[2] = p_mat4[2][0];
-	m[3] = p_mat4[3][0];
-	m[4] = p_mat4[0][1];
-	m[5] = p_mat4[1][1];
-	m[6] = p_mat4[2][1];
-	m[7] = p_mat4[3][1];
-	m[8] = p_mat4[0][2];
-	m[9] = p_mat4[1][2];
-	m[10] = p_mat4[2][2];
-	m[11] = p_mat4[3][2];
-	m[12] = p_mat4[0][3];
-	m[13] = p_mat4[1][3];
-	m[14] = p_mat4[2][3];
-	m[15] = p_mat4[3][3];
-}
-
-Matrix4x4::~Matrix4x4() {
-}

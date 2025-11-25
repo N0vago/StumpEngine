@@ -4,6 +4,7 @@
 #include "Vector3.h"
 #include "Quaternion.h"
 #include "Typedefs.h"
+
 class Matrix3x3
 {
 public:
@@ -13,6 +14,18 @@ public:
 		Vector3(0, 1, 0),
 		Vector3(0, 0, 1)
 	};
+
+	Matrix3x3(const Quaternion& p_quat);
+	Matrix3x3(const Quaternion& p_quat, const Vector3& p_scale);
+
+	Matrix3x3(const Vector3& p_euler);
+	Matrix3x3(const Vector3& p_euler, const Vector3& p_scale);
+
+	Matrix3x3(const Vector3& p_axis, num_fd p_angle);
+	Matrix3x3(const Vector3& p_axis, num_fd p_angle, const Vector3& p_scale);
+
+	Matrix3x3(const Vector3& row0, const Vector3& row1, const Vector3& row2);
+	Matrix3x3();
 
 	const Vector3& operator[](int index) const {
 		return elements[index];
@@ -230,22 +243,6 @@ public:
 
 	operator Quaternion() const { return GetQuat(); }
 
-	Matrix3x3(const Quaternion& p_quat) { SetQuat(p_quat); }
-	Matrix3x3(const Quaternion& p_quat, const Vector3& p_scale) { SetQuatScale(p_quat, p_scale); }
-
-	Matrix3x3(const Vector3& p_euler) { SetEuler(p_euler); }
-	Matrix3x3(const Vector3& p_euler, const Vector3& p_scale) { SetEulerScale(p_euler, p_scale); }
-
-	Matrix3x3(const Vector3& p_axis, num_fd p_angle) { SetAxisAngle(p_axis, p_angle); }
-	Matrix3x3(const Vector3& p_axis, num_fd p_angle, const Vector3& p_scale) { SetAxisAngleScale(p_axis, p_angle, p_scale); }
-
-	Matrix3x3(const Vector3& row0, const Vector3& row1, const Vector3& row2) {
-		elements[0] = row0;
-		elements[1] = row1;
-		elements[2] = row2;
-	}
-
-	Matrix3x3() {}
 };
 
 #endif // !ST_MATRIX3X3_H

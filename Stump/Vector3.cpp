@@ -1,5 +1,10 @@
 #include "Vector3.h"
 
+Vector3::Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
+
+Vector3::Vector3(num_fd p_x, num_fd p_y, num_fd p_z) : x(p_x), y(p_y), z(p_z) {}
+
+Vector3::Vector3(const Vector3& p_other) : x(p_other.x), y(p_other.y), z(p_other.z) {}
 
 Vector3 Vector3::LimitLength(const num_fd p_len) const
 {
@@ -190,6 +195,22 @@ Vector3 Vector3::DirectionTo(const Vector3& p_to) const
 	return (p_to - (*this)).Normalized();
 }
 
+void Vector3::RotateAroundAxis(const Vector3& p_axis, num_fd p_degrees)
+{
+	*this = RotatedAroundAxis(p_axis, p_degrees);
+}
+
+Vector3 Vector3::RotatedAroundAxis(const Vector3& p_axis, num_fd p_degrees) const
+{
+	num_fd theta = Math::ToRadiansf(p_degrees);
+
+	num_fd cos_angle = Math::Cosf(theta);
+	num_fd sin_angle = Math::Sinf(theta);
+	return (*this) * cos_angle +
+		p_axis * (p_axis.Dot(*this)) * (1.0f - cos_angle) +
+		p_axis.Cross(*this) * sin_angle;
+}
+
 Vector3 Vector3::Slide(const Vector3& p_normal) const
 {
 	return (*this) - p_normal * this->Dot(p_normal);
@@ -204,7 +225,6 @@ Vector3 Vector3::Reflect(const Vector3& p_normal) const
 {
 	return  p_normal * 2.0f * this->Dot(p_normal) - (*this);
 }
-
 
 Vector3& Vector3::operator+=(const Vector3& p_v)
 {

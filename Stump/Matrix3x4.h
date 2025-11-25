@@ -1,14 +1,26 @@
 #ifndef ST_MATRIX3X4_H
 #define ST_MATRIX3X4_H
 
+#include <cstring>
 #include "Matrix3x3.h"
 #include "Vector3.h"
 #include "Plane.h"
+
 class Matrix3x4
 {
 public:
-	Matrix3x3 mat3;
-	Vector3 origin;
+
+	union {
+		struct {
+			Matrix3x3 mat3;
+			Vector3 origin;
+		};
+		float elements[4][3];
+	};
+
+	Matrix3x4(num_fd xx, num_fd xy, num_fd xz, num_fd yx, num_fd yy, num_fd yz, num_fd zx, num_fd zy, num_fd zz, num_fd ox, num_fd oy, num_fd oz);
+	Matrix3x4(const Matrix3x3& p_mat3, const Vector3& p_origin = Vector3());
+	Matrix3x4();
 
 	void Invert();
 	Matrix3x4 Inverse() const;
@@ -16,10 +28,12 @@ public:
 	void AffineInvert();
 	Matrix3x4 AffineInverse() const;
 
-	Matrix3x4 Rotated(const Vector3& p_axis, num_fd p_angle) const;
 
 	void Rotate(const Vector3& p_axis, num_fd p_angle);
-	void RotateMat3(const Vector3& p_axis, num_fd p_angle);
+	Matrix3x4 Rotated(const Vector3& p_axis, num_fd p_angle) const;
+
+	void Rotate(const Quaternion& p_quat);
+	Matrix3x4 Rotated(const Quaternion& p_quat) const;
 
 	void SetLookAt(const Vector3& p_eye, const Vector3& p_target, const Vector3& p_up);
 	Matrix3x4 LookingAt(const Vector3& p_target, const Vector3& p_up) const;
@@ -60,6 +74,7 @@ public:
 	void operator*=(const Matrix3x4& p_transform);
 	Matrix3x4 operator*(const Matrix3x4& p_transform) const;
 
+
 	Matrix3x4 InterpolateWith(const Matrix3x4& p_transform, num_fd p_c) const;
 
 	Matrix3x4 InverseXform(const Matrix3x4& t) const {
@@ -75,73 +90,40 @@ public:
 		origin.z = tz;
 	}
 
-	Matrix3x4(num_fd xx, num_fd xy, num_fd xz, num_fd yx, num_fd yy, num_fd yz, num_fd zx, num_fd zy, num_fd zz, num_fd ox, num_fd oy, num_fd oz);
-	Matrix3x4(const Matrix3x3& p_mat3, const Vector3& p_origin = Vector3());
-	Matrix3x4() {}
+	Matrix3x4& operator=(const Matrix3x4& other)
+	{
+		if (this != &other)
+		{
+			std::memcpy(this, &other, sizeof(Matrix3x4));
+		}
+		return *this;
+	}
 
+	Matrix3x4(const Matrix3x4& other)
+	{
+		std::memcpy(this, &other, sizeof(Matrix3x4));
+	}
+	// ------------------------------
+	//   ŒÕ—“–” “Œ– œ≈–≈Ã≈Ÿ≈Õ»ﬂ
+	// ------------------------------
+	Matrix3x4(Matrix3x4&& other) noexcept
+	{
+		std::memcpy(this, &other, sizeof(Matrix3x4));
+	}
 
+	// ------------------------------
+	//  Œœ≈–¿“Œ– œ–»—¬¿»¬¿Õ»ﬂ œ≈–≈Ã≈Ÿ≈Õ»≈Ã
+	// ------------------------------
+	Matrix3x4& operator=(Matrix3x4&& other) noexcept
+	{
+		if (this != &other)
+		{
+			std::memcpy(this, &other, sizeof(Matrix3x4));
+		}
+		return *this;
+	}
 };
 
-Vector3 Matrix3x4::XForm(const Vector3& p_vector) const {
-	return Vector3(
-		mat3[0].Dot(p_vector) + origin.x,
-		mat3[1].Dot(p_vector) + origin.y,
-		mat3[2].Dot(p_vector) + origin.z);
-}
-Plane Matrix3x4::XForm(const Plane& p_plane) const {
-	Matrix3x3 b = mat3.Inverse();
-	b.Transpose();
-	return XFormFast(p_plane, b);
-}
-
-Plane Matrix3x4::XFormInv(const Plane& p_plane) const {
-	Matrix3x4 inv = AffineInverse();
-	Matrix3x3 basis_transpose = mat3.Transposed();
-	return XFormInvFast(p_plane, inv, basis_transpose);
-}
-
-
-Vector3 Matrix3x4::XFormInv(const Vector3& p_vector) const {
-	Vector3 v = p_vector - origin;
-
-	return Vector3(
-		(mat3.elements[0][0] * v.x) + (mat3.elements[1][0] * v.y) + (mat3.elements[2][0] * v.z),
-		(mat3.elements[0][1] * v.x) + (mat3.elements[1][1] * v.y) + (mat3.elements[2][1] * v.z),
-		(mat3.elements[0][2] * v.x) + (mat3.elements[1][2] * v.y) + (mat3.elements[2][2] * v.z));
-}
-
-Plane Matrix3x4::XFormFast(const Plane& p_plane, const Matrix3x3& p_mat3_inverse_transpose) const {
-	// Matrix3x4 a single point on the plane.
-	Vector3 point = p_plane.normal * p_plane.d;
-	point = XForm(point);
-
-	// Use inverse transpose for correct normals with non-uniform scaling.
-	Vector3 normal = p_mat3_inverse_transpose.XForm(p_plane.normal);
-	normal.Normalize();
-
-	num_fd d = normal.Dot(point);
-	return Plane(normal, d);
-}
-
-Plane Matrix3x4::XFormInvFast(const Plane& p_plane, const Matrix3x4& p_inverse, const Matrix3x3& p_mat3_transpose) {
-	// Matrix3x4 a single point on the plane.
-	Vector3 point = p_plane.normal * p_plane.d;
-	point = p_inverse.XForm(point);
-
-	// Note that instead of precalculating the transpose, an alternative
-	// would be to use the transpose for the basis transform.
-	// However that would be less SIMD friendly (requiring a swizzle).
-	// So the cost is one extra precalced value in the calling code.
-	// This is probably worth it, as this could be used in bottleneck areas. And
-	// where it is not a bottleneck, the non-fast method is fine.
-
-	// Use transpose for correct normals with non-uniform scaling.
-	Vector3 normal = p_mat3_transpose.XForm(p_plane.normal);
-	normal.Normalize();
-
-	num_fd d = normal.Dot(point);
-	return Plane(normal, d);
-}
 
 #endif // ST_TRANSFORMMAT_H
 

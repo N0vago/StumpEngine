@@ -1,9 +1,41 @@
 #include "Quaternion.h"
+#include "Matrix3x3.h"
 
 
-Quaternion Quaternion::Slerp(const Quaternion& p_to, const float& p_weight) const {
+Quaternion::Quaternion() : x(0), y(0), z(0), w(0) {}
+
+Quaternion::Quaternion(num_fd p_x, num_fd p_y, num_fd p_z, num_fd p_w) : x(p_x), y(p_y), z(p_z), w(p_w) {}
+
+Quaternion::Quaternion(const Quaternion& other) : x(other.x), y(other.y), z(other.z), w(other.w) {}
+
+Quaternion::Quaternion(const Vector3& euler) { SetEuler(euler); }
+
+Quaternion::Quaternion(const Vector3& axis, const num_fd& angle) { SetAxisAngle(axis, angle); }
+
+Quaternion::Quaternion(const Vector3& vec1, Vector3& vec2) {
+	Vector3 c = vec1.Cross(vec2);
+	num_fd d = vec1.Dot(vec2);
+
+	if (d < -1 + (num_fd)Math::EPSILON) {
+		x = 0;
+		y = 1;
+		z = 0;
+		w = 0;
+	}
+	else {
+		num_fd s = Math::Sqrt((1 + d) * 2);
+		num_fd rs = 1 / s;
+
+		x = c.x * rs;
+		y = c.y * rs;
+		z = c.z * rs;
+		w = s * 0.5f;
+	}
+}
+
+Quaternion Quaternion::Slerp(const Quaternion& p_to, const num_fd& p_weight) const {
 	Quaternion to1;
-	float omega, cosom, sinom, scale0, scale1;
+	num_fd omega, cosom, sinom, scale0, scale1;
 
 	cosom = Dot(p_to);
 
@@ -21,7 +53,7 @@ Quaternion Quaternion::Slerp(const Quaternion& p_to, const float& p_weight) cons
 		to1.w = p_to.w;
 	}
 
-	if ((1 - cosom) > (float)Math::EPSILON) {
+	if ((1 - cosom) > (num_fd)Math::EPSILON) {
 		omega = Math::Acos(cosom);
 		sinom = Math::Sin(omega);
 		scale0 = Math::Sin((1 - p_weight) * omega) / sinom;
@@ -122,5 +154,82 @@ void Quaternion::operator*=(const Quaternion& p_q) {
 		w * p_q.w - x * p_q.x - y * p_q.y - z * p_q.z);
 }
 
+num_fd Quaternion::Dot(const Quaternion& p_q) const {
+	return x * p_q.x + y * p_q.y + z * p_q.z + w * p_q.w;
+}
+
+num_fd Quaternion::LengthSquared() const {
+	return Dot(*this);
+}
+
+void Quaternion::SetAxisAngle(const Vector3& axis, const num_fd& angle) {
+	num_fd d = axis.Length();
+	if (d == 0) {
+		Set(0, 0, 0, 0);
+	}
+	else {
+		num_fd sin_angle = Math::Sin(angle * 0.5f);
+		num_fd cos_angle = Math::Cos(angle * 0.5f);
+		num_fd s = sin_angle / d;
+		Set(axis.x * s, axis.y * s, axis.z * s,
+			cos_angle);
+	}
+}
+
+void Quaternion::operator+=(const Quaternion& p_q) {
+	x += p_q.x;
+	y += p_q.y;
+	z += p_q.z;
+	w += p_q.w;
+}
+
+void Quaternion::operator-=(const Quaternion& p_q) {
+	x -= p_q.x;
+	y -= p_q.y;
+	z -= p_q.z;
+	w -= p_q.w;
+}
+
+void Quaternion::operator*=(const num_fd& s) {
+	x *= s;
+	y *= s;
+	z *= s;
+	w *= s;
+}
+
+void Quaternion::operator/=(const num_fd& s) {
+	*this *= 1 / s;
+}
+
+Quaternion Quaternion::operator+(const Quaternion& q2) const {
+	const Quaternion& q1 = *this;
+	return Quaternion(q1.x + q2.x, q1.y + q2.y, q1.z + q2.z, q1.w + q2.w);
+}
+
+Quaternion Quaternion::operator-(const Quaternion& q2) const {
+	const Quaternion& q1 = *this;
+	return Quaternion(q1.x - q2.x, q1.y - q2.y, q1.z - q2.z, q1.w - q2.w);
+}
+
+Quaternion Quaternion::operator-() const {
+	const Quaternion& q2 = *this;
+	return Quaternion(-q2.x, -q2.y, -q2.z, -q2.w);
+}
+
+Quaternion Quaternion::operator*(const num_fd& s) const {
+	return Quaternion(x * s, y * s, z * s, w * s);
+}
+
+Quaternion Quaternion::operator/(const num_fd& s) const {
+	return *this * (1 / s);
+}
+
+bool Quaternion::operator==(const Quaternion& p_quat) const {
+	return x == p_quat.x && y == p_quat.y && z == p_quat.z && w == p_quat.w;
+}
+
+bool Quaternion::operator!=(const Quaternion& p_quat) const {
+	return x != p_quat.x || y != p_quat.y || z != p_quat.z || w != p_quat.w;
+}
 
 

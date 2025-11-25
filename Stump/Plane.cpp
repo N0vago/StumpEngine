@@ -1,5 +1,59 @@
 #include "Plane.h"
 
+Plane::Plane() :
+	d(0) {
+}
+Plane::Plane(num_fd p_a, num_fd p_b, num_fd p_c, num_fd p_d) :
+	normal(p_a, p_b, p_c),
+	d(p_d) {
+}
+
+Plane::Plane(const Vector3& p_normal, num_fd p_d) :
+	normal(p_normal),
+	d(p_d) {
+}
+
+Plane::Plane(const Vector3& p_point, const Vector3& p_normal) :
+	normal(p_normal),
+	d(p_normal.Dot(p_point)) {
+}
+
+Plane::Plane(const Vector3& p_point1, const Vector3& p_point2, const Vector3& p_point3, ClockDirection p_dir) {
+	if (p_dir == CLOCKWISE) {
+		normal = (p_point1 - p_point3).Cross(p_point1 - p_point2);
+	}
+	else {
+		normal = (p_point1 - p_point2).Cross(p_point1 - p_point3);
+	}
+
+	normal.Normalize();
+	d = normal.Dot(p_point1);
+}
+
+bool Plane::IsPointOver(const Vector3& p_point) const {
+	return (normal.Dot(p_point) > d);
+}
+
+num_fd Plane::DistanceTo(const Vector3& p_point) const {
+	return (normal.Dot(p_point) - d);
+}
+
+bool Plane::HasPoint(const Vector3& p_point, num_fd _epsilon) const {
+	num_fd dist = normal.Dot(p_point) - d;
+	dist = Math::Abs(dist);
+	return (dist <= _epsilon);
+}
+
+
+
+bool Plane::operator==(const Plane& p_plane) const {
+	return normal == p_plane.normal && d == p_plane.d;
+}
+
+bool Plane::operator!=(const Plane& p_plane) const {
+	return normal != p_plane.normal || d != p_plane.d;
+}
+
 void Plane::SetNormal(const Vector3& p_normal) {
 	normal = p_normal;
 }

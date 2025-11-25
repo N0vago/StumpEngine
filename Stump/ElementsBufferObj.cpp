@@ -1,21 +1,21 @@
-#include "STElementsBufferObj.h"
+#include "ElementsBufferObj.h"
 
 
-STElementsBufferObj::STElementsBufferObj(std::vector<GLuint>& indices)
+ElementsBufferObj::ElementsBufferObj(std::vector<GLuint>& indices)
 {
 	glGenBuffers(1, &ID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 }
 
-void STElementsBufferObj::Bind() {
+void ElementsBufferObj::Bind() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 }
 
-void STElementsBufferObj::Unbind() {
+void ElementsBufferObj::Unbind() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void STElementsBufferObj::Delete() {
+void ElementsBufferObj::Delete() {
 	glDeleteBuffers(1, &ID);
 }

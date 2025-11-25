@@ -1,4 +1,4 @@
-#include "STShader.h"
+#include "Shader.h"
 #include <iostream>
 #include <vector>
 
@@ -20,7 +20,7 @@ std::string get_file_contents(const char* filename)
 }
 
 // Constructor that build the Shader Program from 2 different shaders
-STShader::STShader(const char* vertexFile, const char* fragmentFile)
+Shader::Shader(const char* vertexFile, const char* fragmentFile)
 {
 	// Read vertexFile and fragmentFile and store the strings
 	std::string vertexCode = get_file_contents(vertexFile);
@@ -64,19 +64,19 @@ STShader::STShader(const char* vertexFile, const char* fragmentFile)
 }
 
 // Activates the Shader Program
-void STShader::Activate()
+void Shader::Activate()
 {
 	glUseProgram(ID);
 }
 
 // Deletes the Shader Program
-void STShader::Delete()
+void Shader::Delete()
 {
 	glDeleteProgram(ID);
 }
 
 // Checks if the different Shaders have compiled properly
-void STShader::CompileErrors(unsigned int shader, const char* type)
+void Shader::CompileErrors(unsigned int shader, const char* type)
 {
 	// Stores status of compilation
 	GLint hasCompiled;

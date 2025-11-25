@@ -1,6 +1,26 @@
 #include "Matrix3x3.h"
 
 
+Matrix3x3::Matrix3x3(const Quaternion& p_quat) { SetQuat(p_quat); }
+
+Matrix3x3::Matrix3x3(const Quaternion& p_quat, const Vector3& p_scale) { SetQuatScale(p_quat, p_scale); }
+
+Matrix3x3::Matrix3x3(const Vector3& p_euler) { SetEuler(p_euler); }
+
+Matrix3x3::Matrix3x3(const Vector3& p_euler, const Vector3& p_scale) { SetEulerScale(p_euler, p_scale); }
+
+Matrix3x3::Matrix3x3(const Vector3& p_axis, num_fd p_angle) { SetAxisAngle(p_axis, p_angle); }
+
+Matrix3x3::Matrix3x3(const Vector3& p_axis, num_fd p_angle, const Vector3& p_scale) { SetAxisAngleScale(p_axis, p_angle, p_scale); }
+
+Matrix3x3::Matrix3x3(const Vector3& row0, const Vector3& row1, const Vector3& row2) {
+	elements[0] = row0;
+	elements[1] = row1;
+	elements[2] = row2;
+}
+
+Matrix3x3::Matrix3x3() {}
+
 #define cofac(row1, col1, row2, col2) \
 	(elements[row1][col1] * (elements[row2][col2] - elements[row1][col2] * elements[row2][col1]))
 
@@ -991,5 +1011,6 @@ Matrix3x3 Matrix3x3::Lerp(const Matrix3x3& p_to, const num_fd& p_weight) const {
 
 	return b;
 }
+
 
 
