@@ -29,8 +29,6 @@ public:
 
 	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
 
-	void Matrix(Shader& shader, const char* uniform);
-
 	void Inputs(GLFWwindow* window, float deltaTime);
 };
 #endif;

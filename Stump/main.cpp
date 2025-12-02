@@ -1,14 +1,12 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
+#include "RenderManager.h"
 #include "Mesh.h"
 #include "Math.h"
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+static RenderManager renderManager(800, 800);
 
 // Vertices coordinates
 Vertex vertices[] =
@@ -100,53 +98,38 @@ float* ToMatrix4x4(Matrix3x4 mat3x4)
 {
     static float out[4][4];
 
-    // copy
-    for (int r = 0; r < 3; r++)
-        for (int c = 0; c < 4; c++)
-            out[r][c] = mat3x4.elements[r][c];
+	out[0][0] = mat3x4.mat3[0][0];
+	out[0][1] = mat3x4.mat3[0][1];
+	out[0][2] = mat3x4.mat3[0][2];
+	out[0][3] = mat3x4.origin[0];
+	out[1][0] = mat3x4.mat3[1][0];
+	out[1][1] = mat3x4.mat3[1][1];
+	out[1][2] = mat3x4.mat3[1][2];
+	out[1][3] = mat3x4.origin[1];
+	out[2][0] = mat3x4.mat3[2][0];
+	out[2][1] = mat3x4.mat3[2][1];
+	out[2][2] = mat3x4.mat3[2][2];
+	out[2][3] = mat3x4.origin[2];
 
     out[3][0] = 0;
     out[3][1] = 0;
     out[3][2] = 0;
     out[3][3] = 1;
 
+	for (int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+			std::cout << out[i][j] << " ";
+        }
+		std::cout << std::endl;
+    }
+
     return &out[0][0];
 }
 
 int main()
 {
-	
-    //Setup glfw
-    if (!glfwInit())
-    {
-        std::cout << "GLFW init failed!" << std::endl;
-        return -1;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    //Setup window
-    GLFWwindow* window = glfwCreateWindow(width, height, "StumpEngine", NULL, NULL);
-
-    if (window == NULL) {
-
-        std::cout << "Failed to create window" << std::endl;
-
-        glfwTerminate();
-
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    gladLoadGL();
-
-    glViewport(0, 0, width, height);
-
-    Shader shader("default.vert", "default.frag");
-
     Texture textures[] =
     {
         Texture("planks.png", "diffuse", 0),
@@ -156,80 +139,41 @@ int main()
 	std::vector<Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector<GLuint> inds(indices, indices + sizeof(indices) / sizeof(GLuint));
 	std::vector<Texture> texs(textures, textures + sizeof(textures) / sizeof(Texture));
-	Mesh floor(verts, inds, texs);
-
-    // Shader for light cube
-    Shader lightShader("light.vert", "light.frag");
 
 	std::vector<Vertex> lightVerts = GetSphereVertices(0.1f, 36, 18);
 	std::vector<GLuint> lightInds = GetSphereIndices(36, 18);
-	Mesh lightCube(lightVerts, lightInds, texs);
 
+	Mesh floor(verts, inds, Shader("default.vert", "default.frag"));
 
+    floor.ApplyTexture(texs);
+
+	Mesh lightCube(lightVerts, lightInds, Shader("light.vert", "light.frag"));
 
     Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
     Vector3 lightPos = Vector3(0.0f, 1.0f, 0.0f);
-	//TODO: Convert to Mat4
-    Matrix3x4 lightModel;
-    lightModel.Translated(lightPos);
+
+    Matrix3x4 lightMatrix;
+    lightMatrix.Translate(lightPos);
+
+    Vector3 floorPos = Vector3(0.0f, 0.0f, 0.0f);
+
+    Matrix3x4 floorMatrix;
+    floorMatrix.Translate(floorPos);
+	floorMatrix.Scale(Vector3(100.0f, 1.0f, 100.0f));
+
+    lightCube.meshShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(lightCube.meshShader.ID, "model"), 1, GL_FALSE, ToMatrix4x4(lightMatrix));
+    glUniform4f(glGetUniformLocation(lightCube.meshShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
+    floor.meshShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(floor.meshShader.ID, "model"), 1, GL_FALSE, ToMatrix4x4(floorMatrix));
+    glUniform4f(glGetUniformLocation(floor.meshShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
+    glUniform3f(glGetUniformLocation(floor.meshShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 
 
-    Vector3 pyramidPos = Vector3(0.0f, 0.0f, 0.0f);
-    //TODO: Convert to Mat4
-    Matrix3x4 pyramidModel;
-    pyramidModel.Translated(pyramidPos);
-	pyramidModel.Rotate(Vector3(1.0f, 0.0f, 0.0f), 90.0f);
+    renderManager.Init();
 
-
-    lightShader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, ToMatrix4x4(lightModel));
-    glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
-    shader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, ToMatrix4x4(pyramidModel));
-    glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
-    glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-
-
-    glEnable(GL_DEPTH_TEST);
-
-    Camera camera(width, height, Vector3(0.0f, 0.0f, 2.0f));
-
-    float rotation = 0.0f;
-    double startFrameTime;
-    double endFrameTime;
-    float deltaTime = 1.0f;
-
-    while (!glfwWindowShouldClose(window)) {
-
-        startFrameTime = glfwGetTime();
-        
-        glClearColor(0.26f, 0.11f, 0.32f, 1.0f);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        camera.Inputs(window, deltaTime);
-        camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
-
-		floor.Draw(shader, camera, pyramidModel);
-		lightCube.Draw(lightShader, camera, lightModel);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-
-        endFrameTime = glfwGetTime();
-
-        deltaTime = endFrameTime - startFrameTime;
-
-    }
-
-    shader.Delete();
-    lightShader.Delete();
-
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-
+    renderManager.AddToRender(lightCube);
+    renderManager.AddToRender(floor);
     return 0;
-}
+};

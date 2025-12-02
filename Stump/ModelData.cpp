@@ -1,5 +1,6 @@
 #include "ModelData.h"
 
+#if 0
 
 ModelData::ModelData(const char* filePath)
 {
@@ -33,7 +34,7 @@ Mesh ModelData::LoadMesh(unsigned int indMesh)
 	std::vector<Texture> textures = GetTextures();
 
 	// Combine the vertices, indices, and textures into a mesh
-	return Mesh(vertices, indices, textures);
+	return Mesh(vertices, indices);
 }
 
 void ModelData::TraverseNode(unsigned int nextNode, Matrix3x4 matrix)
@@ -335,3 +336,5 @@ std::vector<Vector4> ModelData::GroupFloatsVec4(std::vector<float> floatVec)
 	}
 	return vectors;
 }
+
+#endif

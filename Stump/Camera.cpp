@@ -20,11 +20,6 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane) {
 	
 }
 
-void Camera::Matrix(Shader& shader, const char* uniform)
-{
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, uniform), 1, GL_FALSE, cameraMatrix.matrix[0]);
-}
-
 void Camera::Inputs(GLFWwindow* window, float deltaTime)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

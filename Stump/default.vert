@@ -25,16 +25,11 @@ uniform mat4 camMatrix;
 
 uniform mat4 model;
 
-uniform mat4 translation;
-uniform mat4 rotation;
-uniform mat4 scale;
-
-
 
 void main()
 {
 	
-	crntPos = vec3(model * translation * -rotation * scale * vec4(aPos, 1.0f));
+	crntPos = vec3(model * vec4(aPos, 1.0f));
 	
 	Normal = aNormal;
 	

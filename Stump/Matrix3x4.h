@@ -9,14 +9,8 @@
 class Matrix3x4
 {
 public:
-
-	union {
-		struct {
-			Matrix3x3 mat3;
-			Vector3 origin;
-		};
-		float elements[4][3];
-	};
+	Matrix3x3 mat3;
+	Vector3 origin;
 
 	Matrix3x4(num_fd xx, num_fd xy, num_fd xz, num_fd yx, num_fd yy, num_fd yz, num_fd zx, num_fd zy, num_fd zz, num_fd ox, num_fd oy, num_fd oz);
 	Matrix3x4(const Matrix3x3& p_mat3, const Vector3& p_origin = Vector3());

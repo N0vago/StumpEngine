@@ -20,9 +20,6 @@
     <Filter Include="Code Base">
       <UniqueIdentifier>{84811d44-9d29-4121-9527-8cdca1af0af7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code Base\Buffers">
-      <UniqueIdentifier>{aa5eac48-baf2-4d0e-b8ba-5c02d4404a9f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code Base\Object">
       <UniqueIdentifier>{091f5e46-ec53-4391-a8c3-fdab2f2b91f2}</UniqueIdentifier>
     </Filter>
@@ -38,6 +35,15 @@
     <Filter Include="Code Base\Utilities">
       <UniqueIdentifier>{036d30f0-d005-4016-9b50-bb27922ec381}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code Base\Rendering">
+      <UniqueIdentifier>{04f60454-2054-49d4-ba4e-0b8727de820d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Rendering\Buffers">
+      <UniqueIdentifier>{aa5eac48-baf2-4d0e-b8ba-5c02d4404a9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Core">
+      <UniqueIdentifier>{d98deb1d-79a8-45f0-b31c-b9583e8f1b2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb.cpp">
@@ -50,13 +56,13 @@
       <Filter>Code Base\Main</Filter>
     </ClCompile>
     <ClCompile Include="ElementsBufferObj.cpp">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="VertexArrayObj.cpp">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="VertexBufferObj.cpp">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Code Base\Object</Filter>
@@ -104,16 +110,28 @@
     <ClCompile Include="ModelData.cpp">
       <Filter>Code Base\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Code Base\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Code Base\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Code Base\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Application.cpp">
+      <Filter>Code Base\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VertexBufferObj.h">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="VertexArrayObj.h">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="ElementsBufferObj.h">
-      <Filter>Code Base\Buffers</Filter>
+      <Filter>Code Base\Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Code Base\Object</Filter>
@@ -164,6 +182,30 @@
     <ClInclude Include="ModelData.h">
       <Filter>Code Base\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Code Base\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Code Base\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEvents.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEvents.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Application.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -201,5 +243,8 @@
     <Image Include="Models\bunny\baseColor.png">
       <Filter>Resource Files\Models\bunny</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="WorkToDo.txt" />
   </ItemGroup>
 </Project>

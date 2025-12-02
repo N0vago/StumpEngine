@@ -25,4 +25,5 @@ enum ClockDirection {
 	COUNTERCLOCKWISE = 1
 };
 
+
 #endif

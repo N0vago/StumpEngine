@@ -865,12 +865,14 @@ void Matrix3x3::SetAxisAngle(const Vector3& p_axis, num_fd p_angle) {
 	// Rotation matrix from axis and angle, see https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_angle
 	Vector3 axis_sq(p_axis.x * p_axis.x, p_axis.y * p_axis.y, p_axis.z * p_axis.z);
 	num_fd cosine = Math::Cos(p_angle);
-	elements[0][0] = axis_sq.x + cosine * (1 - axis_sq.x);
-	elements[1][1] = axis_sq.y + cosine * (1 - axis_sq.y);
-	elements[2][2] = axis_sq.z + cosine * (1 - axis_sq.z);
-
 	num_fd sine = Math::Sin(p_angle);
 	num_fd t = 1 - cosine;
+
+
+	elements[0][0] = axis_sq.x * t + cosine;
+	elements[1][1] = axis_sq.y * t + cosine;
+	elements[2][2] = axis_sq.z * t + cosine;
+
 
 	num_fd xyzt = p_axis.x * p_axis.y * t;
 	num_fd zyxs = p_axis.z * sine;
