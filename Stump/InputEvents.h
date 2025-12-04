@@ -1,7 +1,7 @@
 #ifndef ST_INPUT_EVENTS_H
 #define ST_INPUT_EVENTS_H
 
-#include "Core/Event.h"
+#include "Event.h"
 
 #include <format>
 
@@ -9,44 +9,44 @@ namespace Core {
 	class KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return m_KeyCode; }
+		inline int GetKeyCode() const { return keyCode; }
 	protected:
-		KeyEvent(int keycode)
-			: m_KeyCode(keycode) {
+		KeyEvent(int p_keycode)
+			: keyCode(p_keycode) {
 		}
 
-		int m_KeyCode;
+		int keyCode;
 	};
 
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keycode, bool isRepeat)
-			: KeyEvent(keycode), m_IsRepeat(isRepeat) {
+		KeyPressedEvent(int p_keycode, bool p_isRepeat)
+			: KeyEvent(p_keycode), isRepeat(p_isRepeat) {
 		}
 
-		inline bool IsRepeat() const { return m_IsRepeat; }
+		inline bool IsRepeat() const { return isRepeat; }
 
 		std::string ToString() const override
 		{
-			return std::format("KeyPressedEvent: {} (repeat={})", m_KeyCode, m_IsRepeat);
+			return std::format("KeyPressedEvent: {} (repeat={})", keyCode, isRepeat);
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		bool m_IsRepeat;
+		bool isRepeat;
 	};
 
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int keycode)
-			: KeyEvent(keycode) {
+		KeyReleasedEvent(int p_keycode)
+			: KeyEvent(p_keycode) {
 		}
 
 		std::string ToString() const override
 		{
-			return std::format("KeyReleasedEvent: {}", m_KeyCode);
+			return std::format("KeyReleasedEvent: {}", keyCode);
 		}
 
 		EVENT_CLASS_TYPE(KeyReleased)
@@ -55,65 +55,65 @@ namespace Core {
 	class MouseMovedEvent : public Event
 	{
 	public:
-		MouseMovedEvent(double x, double y)
-			: m_MouseX(x), m_MouseY(y) {
+		MouseMovedEvent(double p_x, double p_y)
+			: mouseX(p_x), mouseY(p_y) {
 		}
 
-		inline double GetX() const { return m_MouseX; }
-		inline double GetY() const { return m_MouseY; }
+		inline double GetX() const { return mouseX; }
+		inline double GetY() const { return mouseY; }
 
 		std::string ToString() const override
 		{
-			return std::format("MouseMovedEvent: {}, {}", m_MouseX, m_MouseY);
+			return std::format("MouseMovedEvent: {}, {}", mouseX, mouseY);
 		}
 
 		EVENT_CLASS_TYPE(MouseMoved)
 	private:
-		double m_MouseX, m_MouseY;
+		double mouseX, mouseY;
 	};
 
 	class MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(double xOffset, double yOffset)
-			: m_XOffset(xOffset), m_YOffset(yOffset) {
+		MouseScrolledEvent(double p_xOffset, double p_yOffset)
+			: xOffset(p_xOffset), yOffset(p_yOffset) {
 		}
 
-		inline double GetXOffset() const { return m_XOffset; }
-		inline double GetYOffset() const { return m_YOffset; }
+		inline double GetXOffset() const { return xOffset; }
+		inline double GetYOffset() const { return yOffset; }
 
 		std::string ToString() const override
 		{
-			return std::format("MouseScrolledEvent: {}, {}", m_XOffset, m_YOffset);
+			return std::format("MouseScrolledEvent: {}, {}", xOffset, yOffset);
 		}
 
 		EVENT_CLASS_TYPE(MouseScrolled)
 	private:
-		double m_XOffset, m_YOffset;
+		double xOffset, yOffset;
 	};
 
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return m_Button; }
+		inline int GetMouseButton() const { return button; }
 	protected:
-		MouseButtonEvent(int button)
-			: m_Button(button) {
+		MouseButtonEvent(int p_button)
+			: button(p_button) {
 		}
 
-		int m_Button;
+		int button;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
-			: MouseButtonEvent(button) {
+		MouseButtonPressedEvent(int p_button)
+			: MouseButtonEvent(p_button) {
 		}
 
 		std::string ToString() const override
 		{
-			return std::format("MouseButtonPressedEvent: {}", m_Button);
+			return std::format("MouseButtonPressedEvent: {}", button);
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
@@ -122,17 +122,17 @@ namespace Core {
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
-			: MouseButtonEvent(button) {
+		MouseButtonReleasedEvent(int p_button)
+			: MouseButtonEvent(p_button) {
 		}
 
 		std::string ToString() const override
 		{
-			return std::format("MouseButtonReleasedEvent: {}", m_Button);
+			return std::format("MouseButtonReleasedEvent: {}", button);
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 
-#endif // ST_INPUT_EVENTS_H
 }
+#endif // ST_INPUT_EVENTS_H

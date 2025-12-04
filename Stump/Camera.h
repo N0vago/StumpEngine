@@ -22,14 +22,13 @@ public:
 	int height;
 
 	float speed = 5.0f;
-	float sensitivity = 100.0f;
+	float sensitivity = 1000.0f;
 
 
 	Camera(int width, int height, Vector3 position);
 
 	void UpdateMatrix(float FOVdeg, float nearPlane, float farPlane);
 
-	void Inputs(GLFWwindow* window, float deltaTime);
 };
 #endif;
 

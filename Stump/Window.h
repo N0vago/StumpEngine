@@ -1,14 +1,13 @@
 #ifndef ST_WINDOW_H
 #define ST_WINDOW_H
 
-#include "Core/Event.h"
+#include "Event.h"
 #include "Vector2.h"
-
 #include <cstdint>
 #include <string>
 #include <iostream>
 
-#include <GLFW/glfw3.h>
+class GLFWwindow;
 
 namespace Core {
 	struct WindowInfo
@@ -26,7 +25,7 @@ namespace Core {
 	class Window
 	{
 	public:
-		Window(const WindowInfo& windowInfo = WindowInfo());
+		Window(const WindowInfo& r_windowInfo = WindowInfo());
 
 		~Window();
 
@@ -36,7 +35,7 @@ namespace Core {
 
 		void Update();
 
-		void RaiseEvent(Event& event);
+		void RaiseEvent(Event& r_event);
 
 		Vector2 GetFrameBufferSize() const;
 		Vector2 GetMousePos() const;
@@ -51,5 +50,5 @@ namespace Core {
 
 		GLFWwindow* windowHandle = nullptr;
 	};
-#endif // ST_WINDOW_H
 }
+#endif // ST_WINDOW_H

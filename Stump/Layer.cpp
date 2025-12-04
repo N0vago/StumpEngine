@@ -1,9 +1,9 @@
-#include "Core/Layer.h"
+#include "Layer.h"
 
-#include "Core/Application.h"
+#include "Application.h"
 
 namespace Core {
-	void Layer::QueueTransition(std::unique_ptr<Layer> toLayer)
+	void Layer::QueueTransition(std::unique_ptr<Layer> p_toLayer)
 	{
 
 		auto& layerStack = Application::Get().layerStack;
@@ -12,7 +12,7 @@ namespace Core {
 		{
 			if (layer.get() == this)
 			{
-				layer = std::move(toLayer);
+				layer = std::move(p_toLayer);
 				break;
 			}
 		}

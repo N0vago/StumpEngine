@@ -132,8 +132,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Core\Application.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="EngineModeLayer.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix3x3.cpp" />
@@ -160,9 +162,11 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core\Application.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="EngineModeLayer.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="InputEvents.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix3x3.h" />

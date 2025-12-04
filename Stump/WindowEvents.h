@@ -1,7 +1,7 @@
 #ifndef ST_WINDOW_EVENTS_H
 #define ST_WINDOW_EVENTS_H
 
-#include "Core/Event.h"
+#include "Event.h"
 
 #include <format>
 
@@ -34,5 +34,5 @@ namespace Core {
 		uint32_t width, height;
 	};
 
-#endif // ST_WINDOW_EVENTS_H
 }
+#endif // ST_WINDOW_EVENTS_H

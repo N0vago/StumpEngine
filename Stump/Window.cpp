@@ -1,13 +1,13 @@
-#include "Core/Window.h"
+#include "Window.h"
 
-#include "Core/WindowEvents.h"
-#include "Core/InputEvents.h"
+#include "WindowEvents.h"
+#include "InputEvents.h"
 
 #include <glad/glad.h>
-
+#include <GLFW/glfw3.h>
 
 namespace Core {
-    Window::Window(const WindowInfo& windowInfo) : windowInfo(windowInfo)
+    Window::Window(const WindowInfo& r_windowInfo) : windowInfo(r_windowInfo)
     {
 
     }
@@ -69,7 +69,8 @@ namespace Core {
                 switch (action) {
                 case GLFW_PRESS:
                 {
-
+                    KeyPressedEvent event(key, false);
+                    window.RaiseEvent(event);
                     break;
                 }
                 case GLFW_RELEASE:
@@ -133,15 +134,12 @@ namespace Core {
     void Window::Update()
     {
         glfwSwapBuffers(windowHandle);
-
-        //Put this in the method that less frequently called
-        glfwPollEvents();
     }
 
-    void Window::RaiseEvent(Event& event)
+    void Window::RaiseEvent(Event& r_event)
     {
-        if (windowInfo.eventCallback)
-            windowInfo.eventCallback(event);
+        if (windowInfo.EventCallback)
+            windowInfo.EventCallback(r_event);
     }
 
     Vector2 Window::GetFrameBufferSize() const

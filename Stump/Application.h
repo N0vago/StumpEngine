@@ -25,19 +25,29 @@ namespace Core {
 		void Run();
 		void Stop();
 
-		void RaiseEvent(Event& event);
+		void RaiseEvent(Event& r_event);
 
 		template<typename TLayer>
 		requires(std::is_base_of_v<Layer, TLayer>)
-		void PushLayer();
+		void PushLayer() {
+			layerStack.push_back(std::make_unique<TLayer>());
+		}
 
 		template<typename TLayer>
 		requires(std::is_base_of_v<Layer, TLayer>)
-		TLayer* GetLayer();
+		TLayer* GetLayer()
+		{
+			for (const std::unique_ptr<Layer>& layer : layerStack) {
+				if (TLayer* castedLayer = dynamic_cast<TLayer*>(layer.get())) {
+					return castedLayer;
+				}
+			}
+			return nullptr;
+		}
 
 		Vector2 GetFrameBufferSize() const;
 
-		std::shared_ptr<Window> GetWindow() const;
+		std::shared_ptr<Window> GetWindow() const { return window; }
 
 		static Application& Get();
 
@@ -45,11 +55,11 @@ namespace Core {
 	private:
 		AppInfo appInfo;
 		std::shared_ptr<Window> window;
-		bool m_Running = false;
+		bool running = false;
 
 		std::vector<std::unique_ptr<Layer>> layerStack;
 
 		friend class Layer;
 	};
-	#endif // ST_APPLICATION_H
 }
+#endif // ST_APPLICATION_H

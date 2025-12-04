@@ -1,54 +1,20 @@
 ﻿#include "RenderManager.h"
 
-
-RenderManager::RenderManager(uint16_t p_windowWidth, uint16_t p_windowHeight) : camera(Camera(p_windowWidth, p_windowHeight, Vector3(0.0f, 0.0f, 1.0f))) {
-    
-
-}
-
-void RenderManager::Init()
+void RenderManager::DrawMeshes()
 {
-
-    float startFrameTime;
-    float endFrameTime;
-
 
     glEnable(GL_DEPTH_TEST);
 
-    while (!glfwWindowShouldClose(window)) {
+    glClearColor(0.26f, 0.11f, 0.32f, 1.0f);
 
-        startFrameTime = glfwGetTime();
-
-        glClearColor(0.26f, 0.11f, 0.32f, 1.0f);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        camera.Inputs(window, deltaTime);
-        camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        for(auto& mesh : meshes)
-        {
-            if (meshes.size() == 0) break;
-            std::cout << "Draw element" << "\n";
-            DrawMesh(mesh, camera);
-        }
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-
-        endFrameTime = glfwGetTime();
-
-        deltaTime = endFrameTime - startFrameTime;
-
+    for(auto& mesh : meshes)
+    {
+        if (meshes.size() == 0) break;
+        DrawMesh(mesh, camera);
     }
 
-    //TODO: Delete shaders here
-
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
 }
 
 void RenderManager::AddToRender(Mesh& r_mesh) {
@@ -68,7 +34,7 @@ void RenderManager::AddToRender(Mesh& r_mesh) {
     VBO.Unbind();
     EBO.Unbind();
 
-    meshes.push_back(RenderObject{ &r_mesh, std::move(VAO) });
+    meshes.push_back(RenderObject{ std::make_shared<Mesh>(r_mesh), std::make_shared<VertexArrayObj>(VAO)});
 }
 
 
@@ -76,7 +42,7 @@ void RenderManager::AddToRender(Mesh& r_mesh) {
 void RenderManager::DrawMesh(RenderObject& r_renderObject, Camera& r_camera)
 {
     Mesh& mesh = *r_renderObject.mesh;    
-    VertexArrayObj& vao = r_renderObject.vao;
+    VertexArrayObj& vao = *r_renderObject.vao;
 
     mesh.meshShader.Activate();
 

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "Core/Event.h"
+#include "Event.h"
 
 namespace Core {
 	class Layer
@@ -11,19 +11,19 @@ namespace Core {
 	public:
 		virtual ~Layer() = default;
 
-		virtual void OnEvent(Event& event) {}
+		virtual void OnEvent(Event& r_event) {}
 
-		virtual void OnUpdate(float ts) {}
+		virtual void OnUpdate(float p_ts) {}
 		virtual void OnRender() {}
 
 		template<std::derived_from<Layer> T, typename... Args>
-		void TransitionTo(Args&&... args)
+		void TransitionTo(Args&&... r_args)
 		{
-			QueueTransition(std::move(std::make_unique<T>(std::forward<Args>(args)...)));
+			QueueTransition(std::move(std::make_unique<T>(std::forward<Args>(r_args)...)));
 		}
 	private:
-		void QueueTransition(std::unique_ptr<Layer> layer);
+		void QueueTransition(std::unique_ptr<Layer> p_toLayer);
 
 	};
-	#endif // ST_LAYER_H
 }
+#endif // ST_LAYER_H

@@ -35,14 +35,14 @@ namespace Core
 		using EventFunc = std::function<bool(T&)>;
 	public:
 
-		EventDispatcher(Event& event) : event(event) {}
+		EventDispatcher(Event& r_event) : event(r_event) {}
 
 		template<typename T>
-		bool Dispatch(EventFunc<T> func)
+		bool Dispatch(EventFunc<T> p_func)
 		{
 			if (event.GetEventType() == T::GetStaticType())
 			{
-				event.Handled = func(static_cast<T&>(event));
+				event.Handled = p_func(static_cast<T&>(event));
 				return true;
 			}
 			return false;
@@ -50,5 +50,5 @@ namespace Core
 	private:
 		Event& event;
 	};
-	#endif // ST_EVENT_H
 }
+#endif // ST_EVENT_H

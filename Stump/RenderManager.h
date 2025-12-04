@@ -8,35 +8,32 @@
 #include "ElementsBufferObj.h"
 #include "VertexArrayObj.h"
 
+#include <memory>
 #include <GLFW/glfw3.h>
 class RenderManager
 {
 	struct RenderObject
 	{
-		Mesh* mesh;
-		VertexArrayObj vao;
+		std::shared_ptr<Mesh> mesh;
+		std::shared_ptr<VertexArrayObj> vao;
 	};
-
-	GLFWwindow* window;
-
-	Camera camera;
 
 	std::vector<RenderObject> meshes;
 
+	Camera& camera;
+
 public:
 
-	float deltaTime = 0.0f;
+	RenderManager(Camera& r_camera) : camera(r_camera) {}
 
-	RenderManager(uint16_t p_windowWidth, uint16_t p_windowHeight);
-
-	void Init();
+	void DrawMeshes();
 
 	void AddToRender(Mesh& r_mesh);
 
+	float* ToMatrix4x4(Matrix3x4 p_transform);
 private:
 	void DrawMesh(RenderObject& r_renderObject, Camera& r_camera);
 
-	float* ToMatrix4x4(Matrix3x4 p_transform);
 };
 
 
