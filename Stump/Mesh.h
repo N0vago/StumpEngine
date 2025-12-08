@@ -19,10 +19,13 @@ public:
 
 	Shader meshShader;
 
+
 	Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Shader shader) : vertices(vertices), indices(indices), meshShader(shader) {
 
 	}
 	void ApplyTexture(std::vector<Texture> textures);
+
+    
 };
 #endif
 

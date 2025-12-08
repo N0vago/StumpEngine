@@ -145,6 +145,7 @@
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ElementsBufferObj.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexArrayObj.h" />

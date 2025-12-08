@@ -129,6 +129,7 @@
       <Filter>Code Base\Layers</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VertexBufferObj.h">
@@ -217,6 +218,7 @@
       <Filter>Code Base\Layers</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Shape.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">

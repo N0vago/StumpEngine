@@ -37,8 +37,6 @@ void RenderManager::AddToRender(Mesh& r_mesh) {
     meshes.push_back(RenderObject{ std::make_shared<Mesh>(r_mesh), std::make_shared<VertexArrayObj>(VAO)});
 }
 
-
-
 void RenderManager::DrawMesh(RenderObject& r_renderObject, Camera& r_camera)
 {
     Mesh& mesh = *r_renderObject.mesh;    

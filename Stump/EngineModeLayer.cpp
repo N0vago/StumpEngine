@@ -89,7 +89,6 @@ EngineModeLayer::EngineModeLayer() {
 		Vertex{Vector3(1.0f, 0.0f,  1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f)}
 	};
 
-	// Indices for vertices order
 	GLuint indices[] =
 	{
 		0, 1, 2,
@@ -168,7 +167,6 @@ void EngineModeLayer::OnRender()
 
 void EngineModeLayer::OnEvent(Core::Event& event)
 {
-	printf("%s", event.ToString().c_str());
 	inputManager->ListenEvent(event);
 }
 void EngineModeLayer::CameraMove(float& r_deltaTime)

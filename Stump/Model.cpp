@@ -6,7 +6,7 @@
 * 
 * NOTE: Previous operations on camera matrix is not representing transformation of simple model
 */
-#if 0
+
 void Model::Draw(Shader& shader, Camera& camera)
 {
 	// Go over all meshes and draw each one
@@ -15,5 +15,3 @@ void Model::Draw(Shader& shader, Camera& camera)
 		modelData.meshes[i].first.Draw(shader, camera, modelData.meshes[i].second);
 	}
 }
-
-#endif
