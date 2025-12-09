@@ -1,31 +1,38 @@
 #ifndef ST_MESH_H
 #define ST_MESH_H
 
-#include <vector>
 #include "Object.h"
 #include "Vertex.h"
 #include "Texture.h"
+#include "VertexArrayObj.h"
+#include "ElementsBufferObj.h"
+#include "VertexBufferObj.h"
+#include <vector>
 
-class Mesh : Object
+class Mesh
 {
-public:
+	VertexArrayObj VAO;
+protected:
 	std::vector<Vertex> vertices;
 
 	std::vector<uint32_t> indices;
 
 	std::vector<Texture> meshTextures;
 
-	Matrix3x4 meshTransform;
+	Shader& meshShader;
 
-	Shader meshShader;
+	void SetupMesh();
+public:
 
+	Mesh(Shader& p_shader) : meshShader(p_shader) {}
 
-	Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, Shader shader) : vertices(vertices), indices(indices), meshShader(shader) {
+	Mesh(std::vector<Vertex>& r_vertices, std::vector<uint32_t>& r_indices, Shader& p_shader);
 
-	}
+	void Draw();
+
 	void ApplyTexture(std::vector<Texture> textures);
 
-    
+	Shader& GetShader() { return meshShader; }
 };
 #endif
 

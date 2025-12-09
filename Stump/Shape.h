@@ -1,27 +1,16 @@
 #ifndef ST_SHAPE_H
 #define ST_SHAPE_H
-
-#include "Object.h"
 #include "Mesh.h"
-
-enum class ShapeType {
-	Cube,
-	Sphere,
-	Plane,
-	Pyramid,
-	Cylinder
-};
-
-
-class Shape : public Object
+class Shape : public Mesh
 {
-	Mesh shapeMesh;
+protected:
+	Shape(Shader& shader) : Mesh(shader) {}
 
+	virtual void GenerateVertices() = 0;
+	virtual void GenerateIndices() = 0;
 public:
-	Shape(ObjectInfo p_info);
-	virtual void AddToScene() override;
+	~Shape() = default;
 
 };
-
 #endif // ST_SHAPE_H
 

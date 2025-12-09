@@ -1,11 +1,11 @@
 #include "Shader.h"
 #include <iostream>
 #include <vector>
-
+#include "Vector3.h"
 // Reads a text file and outputs a string with everything in the text file
-std::string get_file_contents(const char* filename)
+std::string get_file_contents(const char* p_filename)
 {
-	std::ifstream in(filename, std::ios::binary);
+	std::ifstream in(p_filename, std::ios::binary);
 	if (in)
 	{
 		std::string contents;
@@ -20,11 +20,11 @@ std::string get_file_contents(const char* filename)
 }
 
 // Constructor that build the Shader Program from 2 different shaders
-Shader::Shader(const char* vertexFile, const char* fragmentFile)
+Shader::Shader(const char* p_vertexFile, const char* p_fragmentFile)
 {
 	// Read vertexFile and fragmentFile and store the strings
-	std::string vertexCode = get_file_contents(vertexFile);
-	std::string fragmentCode = get_file_contents(fragmentFile);
+	std::string vertexCode = get_file_contents(p_vertexFile);
+	std::string fragmentCode = get_file_contents(p_fragmentFile);
 
 	// Convert the shader source strings into character arrays
 	const char* vertexSource = vertexCode.c_str();
@@ -76,28 +76,59 @@ void Shader::Delete()
 }
 
 // Checks if the different Shaders have compiled properly
-void Shader::CompileErrors(unsigned int shader, const char* type)
+void Shader::CompileErrors(unsigned int p_shader, const char* p_type)
 {
 	// Stores status of compilation
 	GLint hasCompiled;
 	// Character array to store error message in
 	char infoLog[1024];
-	if (type != "PROGRAM")
+	if (p_type != "PROGRAM")
 	{
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+		glGetShaderiv(p_shader, GL_COMPILE_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE)
 		{
-			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "SHADER_COMPILATION_ERROR for:" << type << "\n" << infoLog << std::endl;
+			glGetShaderInfoLog(p_shader, 1024, NULL, infoLog);
+			std::cout << "SHADER_COMPILATION_ERROR for:" << p_type << "\n" << infoLog << std::endl;
 		}
 	}
 	else
 	{
-		glGetProgramiv(shader, GL_LINK_STATUS, &hasCompiled);
+		glGetProgramiv(p_shader, GL_LINK_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE)
 		{
-			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "SHADER_LINKING_ERROR for:" << type << "\n" << infoLog << std::endl;
+			glGetProgramInfoLog(p_shader, 1024, NULL, infoLog);
+			std::cout << "SHADER_LINKING_ERROR for:" << p_type << "\n" << infoLog << std::endl;
 		}
 	}
+}
+
+void Shader::SetFloat(const char* p_name, float p_value, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniform1f(glGetUniformLocation(ID, p_name), p_value);
+}
+void Shader::SetFloat3(const char* p_name, float p_x, float p_y, float p_z, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniform3f(glGetUniformLocation(ID, p_name), p_x, p_y, p_z);
+}
+void Shader::SetFloat4(const char* p_name, float p_x, float p_y, float p_z, float p_w, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniform4f(glGetUniformLocation(ID, p_name), p_x, p_y, p_z, p_w);
+}
+void Shader::SetVec3(const char* p_name, Vector3 p_vec, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniform3f(glGetUniformLocation(ID, p_name), p_vec.x, p_vec.y, p_vec.z);
+}
+void Shader::SetMat4(const char* p_name, const float* p_matrix, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_FALSE, p_matrix);
 }

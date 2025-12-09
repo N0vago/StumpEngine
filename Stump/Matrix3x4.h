@@ -93,21 +93,39 @@ public:
 		return *this;
 	}
 
+	float* ToRenderMatrix() const
+	{
+		static float renderMat[4][4];
+		renderMat[0][0] = mat3[0][0];
+		renderMat[0][1] = mat3[0][1];
+		renderMat[0][2] = mat3[0][2];
+		renderMat[0][3] = origin.x;
+		renderMat[1][0] = mat3[1][0];
+		renderMat[1][1] = mat3[1][1];
+		renderMat[1][2] = mat3[1][2];
+		renderMat[1][3] = origin.y;
+		renderMat[2][0] = mat3[2][0];
+		renderMat[2][1] = mat3[2][1];
+		renderMat[2][2] = mat3[2][2];
+		renderMat[2][3] = origin.z;
+		renderMat[3][0] = 0.0f;
+		renderMat[3][1] = 0.0f;
+		renderMat[3][2] = 0.0f;
+		renderMat[3][3] = 1.0f;
+		return &renderMat[0][0];
+	}
+
 	Matrix3x4(const Matrix3x4& other)
 	{
 		std::memcpy(this, &other, sizeof(Matrix3x4));
 	}
-	// ------------------------------
-	//  ÊÎÍÑÒĞÓÊÒÎĞ ÏÅĞÅÌÅÙÅÍÈß
-	// ------------------------------
+
 	Matrix3x4(Matrix3x4&& other) noexcept
 	{
 		std::memcpy(this, &other, sizeof(Matrix3x4));
 	}
 
-	// ------------------------------
-	//  ÎÏÅĞÀÒÎĞ ÏĞÈÑÂÀÈÂÀÍÈß ÏÅĞÅÌÅÙÅÍÈÅÌ
-	// ------------------------------
+
 	Matrix3x4& operator=(Matrix3x4&& other) noexcept
 	{
 		if (this != &other)

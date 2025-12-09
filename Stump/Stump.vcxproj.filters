@@ -29,9 +29,6 @@
     <Filter Include="Code Base\Main">
       <UniqueIdentifier>{c2e05900-79f9-4f51-8a6a-a4834cecea45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code Base\Math">
-      <UniqueIdentifier>{e75eb386-75c5-4f85-af9c-7342b34c03ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code Base\Utilities">
       <UniqueIdentifier>{036d30f0-d005-4016-9b50-bb27922ec381}</UniqueIdentifier>
     </Filter>
@@ -46,6 +43,15 @@
     </Filter>
     <Filter Include="Code Base\Layers">
       <UniqueIdentifier>{1080fe65-8fdd-4f72-9edd-11608a01a77c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Object\Shape">
+      <UniqueIdentifier>{6a5ba6cb-8861-4488-a46f-e79917368be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Object\Math">
+      <UniqueIdentifier>{e75eb386-75c5-4f85-af9c-7342b34c03ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code Base\Scene">
+      <UniqueIdentifier>{bc6cadb5-91ab-49e2-88e9-2415573dd019}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -82,33 +88,32 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Math.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Vector3.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix3x3.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Quaternion.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix3x4.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix4x4.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Plane.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Vector2.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="Vector4.cpp">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClCompile>
     <ClCompile Include="ModelData.cpp">
       <Filter>Code Base\Utilities</Filter>
@@ -128,7 +133,25 @@
     <ClCompile Include="EngineModeLayer.cpp">
       <Filter>Code Base\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Object.cpp">
+      <Filter>Code Base\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Code Base\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneShape.cpp">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereShape.cpp">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeShape.cpp">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Code Base\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshInstance.cpp" />
     <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,36 +179,35 @@
     <ClInclude Include="Camera.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h" />
     <ClInclude Include="Math.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Matrix3x3.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Quaternion.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Typedefs.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Matrix3x4.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Matrix4x4.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Plane.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="Vector4.h">
-      <Filter>Code Base\Math</Filter>
+      <Filter>Code Base\Object\Math</Filter>
     </ClInclude>
     <ClInclude Include="ModelData.h">
       <Filter>Code Base\Utilities</Filter>
@@ -217,7 +239,25 @@
     <ClInclude Include="EngineModeLayer.h">
       <Filter>Code Base\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Object.h">
+      <Filter>Code Base\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Code Base\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereShape.h">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneShape.h">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Code Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshInstance.h" />
+    <ClInclude Include="CubeShape.h">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClInclude>
     <ClInclude Include="Shape.h" />
   </ItemGroup>
   <ItemGroup>

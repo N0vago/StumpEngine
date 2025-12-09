@@ -1,6 +1,7 @@
 #ifndef ST_MODEL_H
 #define ST_MODEL_H
 
+#if 0
 #include "ModelData.h"
 #include "Camera.h"
 #include "Shader.h"
@@ -18,4 +19,5 @@ public:
 
 };
 #endif
+#endif // ST_MODEL_H
 

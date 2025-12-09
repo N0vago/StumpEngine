@@ -1,76 +1,10 @@
 #include "EngineModeLayer.h"
 
+#include "PlaneShape.h"
+#include "SphereShape.h"
+#include "MeshInstance.h"
+#include <memory>
 #include <algorithm>
-
-static std::vector<Vertex> GetCircleVertices(float radius)
-{
-	std::vector<Vertex> circleVertices;
-	for (int i = 0; i < 360; ++i)
-	{
-		float angle = i * 2 * Math::PI / 360;
-		float x = radius * Math::Cosf(angle);
-		float z = radius * Math::Sinf(angle);
-		circleVertices.push_back(Vertex{ Vector3(x, 0.0f, z) });
-	}
-	return circleVertices;
-}
-
-static std::vector<GLuint> GetCircleIndices()
-{
-	std::vector<GLuint> circleIndices;
-	for (int i = 0; i < 360; ++i)
-	{
-		circleIndices.push_back(i);
-		circleIndices.push_back((i + 1) % 360);
-		circleIndices.push_back(360); // Center vertex
-	}
-	return circleIndices;
-}
-
-static std::vector<Vertex> GetSphereVertices(float radius, int sectorCount, int stackCount)
-{
-	std::vector<Vertex> sphereVertices;
-	for (int i = 0; i <= 180; ++i)
-	{
-		float stackAngle = Math::PI / 2 - i * Math::PI / 180; // from pi/2 to -pi/2
-		float xy = radius * cos(stackAngle); // r * cos(u)
-		float z = radius * sin(stackAngle);  // r * sin(u)
-		for (int j = 0; j <= 360; ++j)
-		{
-			float sectorAngle = j * 2 * Math::PI / 360; // from 0 to 2pi
-			float x = xy * cos(sectorAngle); // r * cos(u) * cos(v)
-			float y = xy * sin(sectorAngle); // r * cos(u) * sin(v)
-			sphereVertices.push_back(Vertex{ Vector3(x, y, z) });
-		}
-	}
-	return sphereVertices;
-}
-
-static std::vector<GLuint> GetSphereIndices(int sectorCount, int stackCount)
-{
-	std::vector<GLuint> sphereIndices;
-	for (int i = 0; i < 180; ++i)
-	{
-		int k1 = i * (360 + 1);     // beginning of current stack
-		int k2 = k1 + 360 + 1;      // beginning of next stack
-		for (int j = 0; j < 360; ++j, ++k1, ++k2)
-		{
-			if (i != 0)
-			{
-				sphereIndices.push_back(k1);
-				sphereIndices.push_back(k2);
-				sphereIndices.push_back(k1 + 1);
-			}
-			if (i != (180 - 1))
-			{
-				sphereIndices.push_back(k1 + 1);
-				sphereIndices.push_back(k2);
-				sphereIndices.push_back(k2 + 1);
-			}
-		}
-	}
-	return sphereIndices;
-}
 
 EngineModeLayer::EngineModeLayer() {
 
@@ -80,38 +14,24 @@ EngineModeLayer::EngineModeLayer() {
 	camera = std::make_unique<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
 	renderManager = std::make_unique<RenderManager>(RenderManager(*camera));
 	inputManager = std::make_unique<InputManager>(InputManager());
+	
+	sceneRoot = std::make_unique<SceneNode>(ObjectInfo(0, "Root"));
 
-	Vertex vertices[] =
-	{
-		Vertex{Vector3(-1.0f, 0.0f,  1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 0.0f)},
-		Vertex{Vector3(-1.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f)},
-		Vertex{Vector3(1.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f)},
-		Vertex{Vector3(1.0f, 0.0f,  1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f)}
-	};
-
-	GLuint indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
 	Texture textures[] =
 	{
 		Texture("planks.png", "diffuse", 0),
 		Texture("planksSpec.png", "specular", 1)
 	};
-
-	std::vector<Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
-	std::vector<GLuint> inds(indices, indices + sizeof(indices) / sizeof(GLuint));
 	std::vector<Texture> texs(textures, textures + sizeof(textures) / sizeof(Texture));
 
-	std::vector<Vertex> lightVerts = GetSphereVertices(0.1f, 36, 18);
-	std::vector<GLuint> lightInds = GetSphereIndices(36, 18);
+	Shader defaultShader("default.vert", "default.frag");
+	Shader lightShader("light.vert", "light.frag");
 
-	Mesh floor(verts, inds, Shader("default.vert", "default.frag"));
+	PlaneShape plane(10.0f, 10.0f, defaultShader);
+	SphereShape lightSphere(1.0f, 36, 18, lightShader);
 
-	floor.ApplyTexture(texs);
-
-	Mesh lightCube(lightVerts, lightInds, Shader("light.vert", "light.frag"));
+	MeshInstance lightSphereInstance(ObjectInfo(1, "LightSphere"), &lightSphere);
+	MeshInstance planeInstance(ObjectInfo(2, "Floor"), &plane);
 
 	Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
 	Vector3 lightPos = Vector3(0.0f, 1.0f, 0.0f);
@@ -119,23 +39,33 @@ EngineModeLayer::EngineModeLayer() {
 	Matrix3x4 lightMatrix;
 	lightMatrix.Translate(lightPos);
 
-	Vector3 floorPos = Vector3(0.0f, 0.0f, 0.0f);
-
 	Matrix3x4 floorMatrix;
-	floorMatrix.Translate(floorPos);
+	floorMatrix.Translate(Vector3(0.0f, 0.0f, 0.0f));
 	floorMatrix.Rotate(Vector3(Math::ToRadians(90.0f), 0.0f, 0.0f));
 	floorMatrix.Scale(Vector3(100.0f, 1.0f, 100.0f));
 
-	lightCube.meshShader.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(lightCube.meshShader.ID, "model"), 1, GL_FALSE, renderManager->ToMatrix4x4(lightMatrix));
-	glUniform4f(glGetUniformLocation(lightCube.meshShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
-	floor.meshShader.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(floor.meshShader.ID, "model"), 1, GL_FALSE, renderManager->ToMatrix4x4(floorMatrix));
-	glUniform4f(glGetUniformLocation(floor.meshShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, 1);
-	glUniform3f(glGetUniformLocation(floor.meshShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	plane.ApplyTexture(texs);
+	
 
-	renderManager->AddToRender(lightCube);
-	renderManager->AddToRender(floor);
+	planeInstance.SetTransform(floorMatrix);
+	lightSphereInstance.SetTransform(lightMatrix);
+
+
+	plane.GetShader().Activate();
+	plane.GetShader().SetMat4("camMatrix", camera->cameraMatrix.matrix[0], false);
+	plane.GetShader().SetMat4("model", floorMatrix.ToRenderMatrix(), false);
+	plane.GetShader().SetVec3("camPos", camera->Position, false);
+	plane.GetShader().SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z, false);
+	plane.GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+
+	lightSphere.GetShader().Activate();
+	lightSphere.GetShader().SetMat4("model", lightMatrix.ToRenderMatrix(), false);
+	lightSphere.GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+
+	sceneRoot->EnterTree();
+
+	sceneRoot->AddChild(&planeInstance);
+	sceneRoot->AddChild(&lightSphereInstance);
 }
 
 EngineModeLayer::~EngineModeLayer()
@@ -144,6 +74,8 @@ EngineModeLayer::~EngineModeLayer()
 
 void EngineModeLayer::OnUpdate(float p_ts)
 {
+
+	sceneRoot->Update(p_ts);
 
 	CameraMove(p_ts);
 
