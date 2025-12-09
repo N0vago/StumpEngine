@@ -1,31 +1,37 @@
 #include "SceneNode.h"
-
+#include <algorithm>
 SceneNode::SceneNode(const ObjectInfo& p_info) : Object(p_info)
 {
+	parent = nullptr;
 }
 
 SceneNode::~SceneNode()
 {
-	parent.reset();
+	parent = nullptr;
 	children.clear();
 }
 
 void SceneNode::SetParent(SceneNode* p_parent)
 {
-	if(parent.get() == p_parent)
+	/*if(parent == p_parent)
 		return;
 	if(parent)
 		parent->RemoveChild(this);
 	if(p_parent)
-		p_parent->AddChild(this);
+		p_parent->AddChild(std::move(std::make_unique<SceneNode>(this)));*/
+	parent = p_parent;
 }
 
-void SceneNode::AddChild(SceneNode* p_child)
+void SceneNode::AddChild(std::unique_ptr<SceneNode> p_child)
 {
-	p_child->SetParent(this);
-	if(isInTree)
+	if (!p_child)
+		return;
+
+	p_child->parent = this;
+
+	if (!p_child->isInTree)
 		p_child->EnterTree();
-	children.push_back(std::move(std::make_unique<SceneNode>(p_child)));
+	children.push_back(std::move(p_child));
 }
 
 void SceneNode::RemoveChild(SceneNode* p_child)
@@ -41,7 +47,7 @@ void SceneNode::RemoveChild(SceneNode* p_child)
 	if ((*it)->isInTree)
 		(*it)->ExitTree();
 
-	(*it)->SetParent(nullptr);
+	(*it)->parent = nullptr;
 
 	children.erase(it);
 }
@@ -88,6 +94,9 @@ void SceneNode::OnSleep()
 void SceneNode::Update(float p_deltaTime)
 {
 	if (!isInTree)
+		return;
+
+	if (children.size() == 0)
 		return;
 
 	for (auto& child : children)

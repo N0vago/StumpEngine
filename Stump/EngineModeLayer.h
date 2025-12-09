@@ -11,7 +11,6 @@ class SceneNode;
 class EngineModeLayer : public Core::Layer
 {
 	std::unique_ptr<Camera> camera;
-	std::unique_ptr<RenderManager> renderManager;
 	std::unique_ptr<InputManager> inputManager;
 
 	std::unique_ptr<SceneNode> sceneRoot;

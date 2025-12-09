@@ -9,18 +9,16 @@
 #include <GLFW/glfw3.h>
 class RenderManager
 {
-	std::vector<std::unique_ptr<Mesh>> meshes;
-
-	Camera& camera;
+	std::vector<Mesh*> meshes;
 
 public:
 
-	RenderManager(Camera& r_camera);
+	RenderManager();
 	~RenderManager();
 
 	void DrawMeshes();
 
-	void AddToRender(const Mesh* p_mesh);
+	void AddToRender(Mesh* p_mesh);
 
 	void RemoveFromRender(const Mesh* p_mesh);
 

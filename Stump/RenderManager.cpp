@@ -1,10 +1,11 @@
 ﻿#include "RenderManager.h"
 
 #include <assert.h>
+#include <algorithm>
 
 static RenderManager* Instance = nullptr;
 
-RenderManager::RenderManager(Camera& r_camera) : camera(r_camera)
+RenderManager::RenderManager()
 {
     Instance = this;
 }
@@ -26,20 +27,22 @@ void RenderManager::DrawMeshes()
     for(auto& mesh : meshes)
     {
         if (meshes.size() == 0) break;
+
 		mesh->Draw();
     }
 
 }
 
-void RenderManager::AddToRender(const Mesh* p_mesh) {
-
-    meshes.push_back(std::make_unique<Mesh>(p_mesh));
+void RenderManager::AddToRender(Mesh* p_mesh) {
+    if (!p_mesh)
+        return;
+    meshes.push_back(p_mesh);
 }
 
 void RenderManager::RemoveFromRender(const Mesh* p_mesh) {
     meshes.erase(std::remove_if(meshes.begin(), meshes.end(),
-        [p_mesh](const std::unique_ptr<Mesh>& mesh) {
-            return mesh.get() == p_mesh;
+        [p_mesh](Mesh* mesh) {
+            return mesh == p_mesh;
         }), meshes.end());
 }
 
