@@ -2,14 +2,13 @@
 #define ST_RENDER_MANAGER_H
 
 #include <iostream>
-#include "Camera.h"
-#include "Mesh.h"
+#include "MeshInstance.h"
 
 #include <memory>
 #include <GLFW/glfw3.h>
 class RenderManager
 {
-	std::vector<Mesh*> meshes;
+	std::vector<MeshInstance*> meshes;
 
 public:
 
@@ -18,9 +17,9 @@ public:
 
 	void DrawMeshes();
 
-	void AddToRender(Mesh* p_mesh);
+	void AddToRender(MeshInstance* p_mesh);
 
-	void RemoveFromRender(const Mesh* p_mesh);
+	void RemoveFromRender(MeshInstance* p_mesh);
 
 	static RenderManager& Get();
 

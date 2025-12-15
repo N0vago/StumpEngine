@@ -6,14 +6,13 @@
 #include <memory>
 #include <algorithm>
 
-EngineModeLayer::EngineModeLayer() {
+EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "default.frag")), lightShader(Shader("light.vert", "light.frag")) {
 
 	float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
 	float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
 
 	camera = std::make_unique<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
 	inputManager = std::make_unique<InputManager>(InputManager());
-	
 	sceneRoot = std::make_unique<SceneNode>(ObjectInfo(0, "Root"));
 
 	Texture textures[] =
@@ -23,11 +22,9 @@ EngineModeLayer::EngineModeLayer() {
 	};
 	std::vector<Texture> texs(textures, textures + sizeof(textures) / sizeof(Texture));
 
-	Shader defaultShader("default.vert", "default.frag");
-	Shader lightShader("light.vert", "light.frag");
 
 	auto plane = std::make_shared<PlaneShape>(10.0f, 10.0f, defaultShader);
-	auto lightSphere = std::make_shared<SphereShape>(1.0f, 36, 18, lightShader);
+	auto lightSphere = std::make_shared<SphereShape>(1.0f, 18, 9, lightShader);
 
 	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "LightSphere"), lightSphere, *camera);
 	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Floor"), plane, *camera);
@@ -40,28 +37,27 @@ EngineModeLayer::EngineModeLayer() {
 
 	Matrix3x4 floorMatrix;
 	floorMatrix.Translate(Vector3(0.0f, 0.0f, 0.0f));
-	floorMatrix.Rotate(Vector3(Math::ToRadians(90.0f), 0.0f, 0.0f));
-	floorMatrix.Scale(Vector3(100.0f, 1.0f, 100.0f));
+	floorMatrix.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
+	floorMatrix.Scale(Vector3(10.f, 0.0f, 10.0f));
+	
 
 	plane->ApplyTexture(texs);
 	
-
 	planeInstance->SetTransform(floorMatrix);
 	lightSphereInstance->SetTransform(lightMatrix);
 
 
 	plane->GetShader().Activate();
-	plane->GetShader().SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z, false);
-	plane->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+	plane->GetShader().SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z, true);
+	plane->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1, true);
 
 	lightSphere->GetShader().Activate();
-	lightSphere->GetShader().SetMat4("model", lightMatrix.ToRenderMatrix(), false);
-	lightSphere->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+	lightSphere->GetShader().SetMat4("model", lightMatrix.ToRenderMatrix().data(), true, true);
+	lightSphere->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1, true);
 
+	sceneRoot->EnterTree();
 	sceneRoot->AddChild(std::move(planeInstance));
 	sceneRoot->AddChild(std::move(lightSphereInstance));
-	sceneRoot->EnterTree();
-
 }
 
 EngineModeLayer::~EngineModeLayer()
@@ -84,12 +80,11 @@ void EngineModeLayer::OnUpdate(float p_ts)
 		camera->firstClick = true;
 	}
 	
-	camera->UpdateMatrix(45.0f, 0.1f, 100.0f);
+	camera->UpdateMatrix(90.0f, 0.1f, 100.0f);
 }
 
 void EngineModeLayer::OnRender()
 {
-	
 	RenderManager::Get().DrawMeshes();
 }
 

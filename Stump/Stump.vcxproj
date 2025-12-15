@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="CubeShape.cpp" />
     <ClCompile Include="EngineModeLayer.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="PlaneShape.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="SphereShape.cpp" />
@@ -168,6 +170,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="CubeShape.h" />
     <ClInclude Include="EngineModeLayer.h" />
@@ -189,6 +192,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Shape.h" />

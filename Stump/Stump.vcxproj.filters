@@ -53,6 +53,9 @@
     <Filter Include="Code Base\Scene">
       <UniqueIdentifier>{bc6cadb5-91ab-49e2-88e9-2415573dd019}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code Base\Object\Physic">
+      <UniqueIdentifier>{ed227603-b238-447f-af01-bd4b6f6a7444}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb.cpp">
@@ -152,7 +155,13 @@
       <Filter>Code Base\Scene</Filter>
     </ClCompile>
     <ClCompile Include="MeshInstance.cpp" />
-    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Shape.cpp">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Code Base\Object\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VertexBufferObj.h">
@@ -258,7 +267,13 @@
     <ClInclude Include="CubeShape.h">
       <Filter>Code Base\Object\Shape</Filter>
     </ClInclude>
-    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Shape.h">
+      <Filter>Code Base\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Code Base\Object\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">

@@ -5,6 +5,8 @@ SphereShape::SphereShape(float p_radius, int p_sectorCount, int p_stackCount, Sh
     GenerateVertices();
     GenerateIndices();
 	SetupMesh();
+
+	std::cout << "Created SphereShape with radius: " << radius << ", sectorCount: " << sectorCount << ", stackCount: " << stackCount << std::endl;
 }
 
 void SphereShape::GenerateVertices()

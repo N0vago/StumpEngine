@@ -50,6 +50,8 @@ void Mesh::ApplyTexture(std::vector<Texture> textures) {
 
 void Mesh::Draw()
 {
+    meshShader.Activate();
+
     VAO.Bind();
 
     glDrawElements(GL_TRIANGLES,

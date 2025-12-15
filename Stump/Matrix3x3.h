@@ -153,6 +153,8 @@ public:
 	void operator*=(num_fd p_val);
 	Matrix3x3 operator*(num_fd p_val) const;
 
+	Vector3 operator*(const Vector3& v) const;
+
 	int GetOrthogonalIndex() const;
 	void SetOrthogonalIndex(int p_index);
 

@@ -9,6 +9,9 @@ inline void __swap_tmpl(T& x, T& y) {
 	y = aux;
 }
 
+#define MIN(m_x, m_y) (((m_x) < (m_y)) ? (m_x) : (m_y))
+#define MAX(m_x, m_y) (((m_x) > (m_y)) ? (m_x) : (m_y))
+
 
 #ifndef SGN
 #define SGN(m_v) (((m_v) < 0) ? (-1.0f) : (+1.0f))

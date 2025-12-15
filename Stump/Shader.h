@@ -33,6 +33,6 @@ public:
 
 	void SetVec3(const char* p_name, Vector3 p_vec, bool p_useShader = false);
 
-	void SetMat4(const char* p_name, const float* p_matrix, bool p_useShader = false);
+	void SetMat4(const char* p_name, const float* p_matrix, bool p_transposed = false, bool p_useShader = false);
 };
 #endif

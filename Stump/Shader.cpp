@@ -22,6 +22,8 @@ std::string get_file_contents(const char* p_filename)
 // Constructor that build the Shader Program from 2 different shaders
 Shader::Shader(const char* p_vertexFile, const char* p_fragmentFile)
 {
+
+	std::cout << "Compiling Shader: " << p_vertexFile << " and " << p_fragmentFile << std::endl;
 	// Read vertexFile and fragmentFile and store the strings
 	std::string vertexCode = get_file_contents(p_vertexFile);
 	std::string fragmentCode = get_file_contents(p_fragmentFile);
@@ -126,9 +128,12 @@ void Shader::SetVec3(const char* p_name, Vector3 p_vec, bool p_useShader)
 		Activate();
 	glUniform3f(glGetUniformLocation(ID, p_name), p_vec.x, p_vec.y, p_vec.z);
 }
-void Shader::SetMat4(const char* p_name, const float* p_matrix, bool p_useShader)
+void Shader::SetMat4(const char* p_name, const float* p_matrix, bool p_transposed, bool p_useShader)
 {
 	if (p_useShader)
 		Activate();
-	glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_FALSE, p_matrix);
+	if(p_transposed)
+		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_TRUE, p_matrix);
+	else
+		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_FALSE, p_matrix);
 }

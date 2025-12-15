@@ -14,6 +14,9 @@ class EngineModeLayer : public Core::Layer
 	std::unique_ptr<InputManager> inputManager;
 
 	std::unique_ptr<SceneNode> sceneRoot;
+
+	Shader defaultShader;
+	Shader lightShader;
 public:
 	EngineModeLayer();
 	virtual ~EngineModeLayer();

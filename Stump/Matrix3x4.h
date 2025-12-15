@@ -1,11 +1,11 @@
 #ifndef ST_MATRIX3X4_H
 #define ST_MATRIX3X4_H
 
-#include <cstring>
 #include "Matrix3x3.h"
 #include "Vector3.h"
 #include "Plane.h"
-
+#include <cstring>
+#include <array>
 class Matrix3x4
 {
 public:
@@ -93,26 +93,14 @@ public:
 		return *this;
 	}
 
-	float* ToRenderMatrix() const
+	std::array<float, 16> ToRenderMatrix() const
 	{
-		static float renderMat[4][4];
-		renderMat[0][0] = mat3[0][0];
-		renderMat[0][1] = mat3[0][1];
-		renderMat[0][2] = mat3[0][2];
-		renderMat[0][3] = origin.x;
-		renderMat[1][0] = mat3[1][0];
-		renderMat[1][1] = mat3[1][1];
-		renderMat[1][2] = mat3[1][2];
-		renderMat[1][3] = origin.y;
-		renderMat[2][0] = mat3[2][0];
-		renderMat[2][1] = mat3[2][1];
-		renderMat[2][2] = mat3[2][2];
-		renderMat[2][3] = origin.z;
-		renderMat[3][0] = 0.0f;
-		renderMat[3][1] = 0.0f;
-		renderMat[3][2] = 0.0f;
-		renderMat[3][3] = 1.0f;
-		return &renderMat[0][0];
+		return {
+			mat3[0][0], mat3[0][1], mat3[0][2], origin.x,
+			mat3[1][0], mat3[1][1], mat3[1][2], origin.y,
+			mat3[2][0], mat3[2][1], mat3[2][2], origin.z,
+			0.0f,       0.0f,       0.0f,       1.0f
+		};
 	}
 
 	Matrix3x4(const Matrix3x4& other)

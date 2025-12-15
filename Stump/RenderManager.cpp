@@ -28,20 +28,20 @@ void RenderManager::DrawMeshes()
     {
         if (meshes.size() == 0) break;
 
-		mesh->Draw();
+		mesh->OnRender();
     }
 
 }
 
-void RenderManager::AddToRender(Mesh* p_mesh) {
+void RenderManager::AddToRender(MeshInstance* p_mesh) {
     if (!p_mesh)
         return;
     meshes.push_back(p_mesh);
 }
 
-void RenderManager::RemoveFromRender(const Mesh* p_mesh) {
+void RenderManager::RemoveFromRender(MeshInstance* p_mesh) {
     meshes.erase(std::remove_if(meshes.begin(), meshes.end(),
-        [p_mesh](Mesh* mesh) {
+        [p_mesh](MeshInstance* mesh) {
             return mesh == p_mesh;
         }), meshes.end());
 }

@@ -985,6 +985,15 @@ Matrix3x3 Matrix3x3::operator*(num_fd p_val) const {
 	return ret;
 }
 
+Vector3 Matrix3x3::operator*(const Vector3& v) const
+{
+	return Vector3(
+		elements[0].x * v.x + elements[1].x * v.y + elements[2].x * v.z,
+		elements[0].y * v.x + elements[1].y * v.y + elements[2].y * v.z,
+		elements[0].z * v.x + elements[1].z * v.y + elements[2].z * v.z
+	);
+}
+
 Vector3 Matrix3x3::XForm(const Vector3& p_vector) const {
 	return Vector3(
 		elements[0].Dot(p_vector),
