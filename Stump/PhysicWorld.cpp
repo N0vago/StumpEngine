@@ -9,3 +9,8 @@ void PhysicWorld::StepSimulation(float deltaTime)
 		body->Integrate(deltaTime);
 	}
 }
+
+void PhysicWorld::ResolveCollisions(float deltaTime)
+{
+	
+}

@@ -2,7 +2,6 @@
 #define ST_COLLIDER_H
 
 #include "Matrix3x4.h"
-#include "RigidBody.h"
 #include <memory>
 
 enum ColliderType {
@@ -22,14 +21,6 @@ struct CollisionPoints {
 class Collider
 {
 public:
-
-	Matrix3x4 localTransform;
-
-	std::unique_ptr<RigidBody> attachedRigidBody;
-
-	Collider(Matrix3x4 p_localTransform) : localTransform(p_localTransform), attachedRigidBody(nullptr) {}
-	~Collider() = default;
-
 	virtual ColliderType GetColliderType() const = 0;
 
 };
@@ -58,9 +49,8 @@ class SphereCollider : public Collider
 public:
 	Vector3 center;
 	float radius;
-	SphereCollider(Matrix3x4 p_transform, float p_radius)
-		: Collider(p_transform), radius(p_radius) {
-		center = localTransform.origin;
+	SphereCollider(Vector3 p_center, float p_radius)
+		: center(p_center), radius(p_radius) {
 	}
 	ColliderType GetColliderType() const override
 	{
@@ -74,12 +64,8 @@ public:
 	Vector3 halfExtents;
 	Matrix3x3 orientation;
 
-	BoxCollider(Matrix3x4 p_transform)
-		: Collider(p_transform) {
-		center = localTransform.origin;	
-		orientation = localTransform.mat3;
-		halfExtents = Vector3(1.0f, 1.0f, 1.0f);
-		
+	BoxCollider(Vector3 p_center, Vector3 p_halfExtents, Matrix3x3 p_orientation)
+		: center(p_center), halfExtents(p_halfExtents), orientation(p_orientation) {
 	}
 	ColliderType GetColliderType() const override
 	{
@@ -93,7 +79,7 @@ public:
 	num_fd distance;
 
 	PlaneCollider(Matrix3x4 p_transform, Vector3 p_normal, num_fd p_distance)
-		: Collider(p_transform), normal(p_normal), distance(p_distance) {
+		: normal(p_normal), distance(p_distance) {
 	}
 	ColliderType GetColliderType() const override
 	{

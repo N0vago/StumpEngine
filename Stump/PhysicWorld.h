@@ -5,10 +5,16 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
+
+
+
 class PhysicWorld
 {
 	std::vector<std::shared_ptr<RigidBody>> rigidBodies;
 	Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
+
+	std::function<void(const Collision&, float)> onCollision;
 public:
 	void AddRigidBody(std::shared_ptr<RigidBody> p_rigidBody) {
 		rigidBodies.push_back(p_rigidBody);
@@ -23,6 +29,10 @@ public:
 		return gravity;
 	}
 	void StepSimulation(float deltaTime);
+private: 
+	void ResolveCollisions(float deltaTime);
+
+	void 
 };
 #endif // ST_PHYSIC_WORLD_H
 
