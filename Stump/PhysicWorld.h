@@ -15,8 +15,6 @@ class PhysicWorld
 {
 	std::vector<std::shared_ptr<RigidBody>> rigidBodies;
 	Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
-
-	std::function<void(const Collision&)> onCollision;
 public:
 
 	PhysicWorld();

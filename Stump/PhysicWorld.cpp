@@ -1,5 +1,6 @@
 ﻿#include "PhysicWorld.h"
-
+#include "Application.h"
+#include <assert.h>
 static PhysicWorld* Instance = nullptr;
 
 PhysicWorld::PhysicWorld()
@@ -11,10 +12,41 @@ PhysicWorld::~PhysicWorld()
 {
 	Instance = nullptr;
 }
+static void SyncColliderFromBody(const std::shared_ptr<RigidBody>& body)
+{
+	if (!body || !body->collider || !body->transform) return;
+
+	switch (body->collider->GetColliderType())
+	{
+	case COLLIDER_SPHERE:
+	{
+		auto* s = static_cast<SphereCollider*>(body->collider.get());
+		s->center = body->transform->origin;
+	} break;
+
+	case COLLIDER_BOX:
+	{
+		auto* b = static_cast<BoxCollider*>(body->collider.get());
+		b->center = body->transform->origin;
+		b->orientation = body->transform->GetMat3(); // если у Matrix3x4 есть basis (Matrix3x3)
+	} break;
+
+	case COLLIDER_PLANE:
+	{
+		// если плоскость должна следовать за объектом сцены:
+		// auto* p = static_cast<PlaneCollider*>(body->collider.get());
+		// p->normal = body->transform->basis.GetColumn(1) (или нужная ось) и p->distance = ...
+	} break;
+	}
+}
 
 void PhysicWorld::StepSimulation(float deltaTime)
 {
+	for(auto& body : rigidBodies)
+		SyncColliderFromBody(body);
+
 	for (auto& body : rigidBodies) {
+		
 		if (!body->isStatic) {
 			if (body->affectedByGravity)
 				body->ApplyForce(gravity * body->mass);
@@ -33,26 +65,37 @@ void PhysicWorld::StepSimulation(float deltaTime)
 
 PhysicWorld& PhysicWorld::Get()
 {
+	assert(Instance && "PhysicWorld instance does not exist!");
 	return *Instance;
 }
 
 void PhysicWorld::BroadPhase(std::vector<Collision>& r_out)
 {
 	for (size_t i = 0; i < rigidBodies.size(); ++i) {
-		for(size_t j = i + 1; j < rigidBodies.size(); ++j) {
-			
-			if (rigidBodies[i]->collider == nullptr || rigidBodies[j]->collider == nullptr)	
-				if (rigidBodies[i]->isStatic && rigidBodies[j]->isStatic)
-					continue;
+		for (size_t j = i + 1; j < rigidBodies.size(); ++j) {
+
+			if (rigidBodies[i]->collider == nullptr || rigidBodies[j]->collider == nullptr)
+				continue;
+
+			if (rigidBodies[i]->isStatic && rigidBodies[j]->isStatic)
+				continue;
 
 
 			Collision collision;
 			collision.bodyA = rigidBodies[i];
 			collision.bodyB = rigidBodies[j];
 
-			if (rigidBodies[i]->collider->GetAABB().IsIntersects(rigidBodies[j]->collider->GetAABB())) {
-				r_out.push_back(collision);
+			bool isPlaneA = rigidBodies[i]->collider->GetColliderType() == ColliderType::COLLIDER_PLANE;
+			bool isPlaneB = rigidBodies[j]->collider->GetColliderType() == ColliderType::COLLIDER_PLANE;
+
+			if (isPlaneA || isPlaneB) {
+				r_out.emplace_back(collision);
+				continue;
 			}
+			if (rigidBodies[i]->collider->GetAABB().IsIntersects(rigidBodies[j]->collider->GetAABB())) {
+				r_out.emplace_back(collision);
+			}
+
 		}
 	}
 }
@@ -65,14 +108,10 @@ void PhysicWorld::NarrowPhase(Collision& potentialCollisions)
 		potentialCollisions.bodyB->collider.get()
 	);
 	if (points.hasCollision) {
-
 		potentialCollisions.points = points;
 		ResolveCollision(potentialCollisions);
 		ApplyAngularImpulse(potentialCollisions);
 		ApplyImpulse(potentialCollisions);
-		if (onCollision) {
-			onCollision(potentialCollisions);
-		}
 	}
 }
 

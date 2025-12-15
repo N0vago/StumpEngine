@@ -2,6 +2,7 @@
 
 #include "PlaneShape.h"
 #include "SphereShape.h"
+#include "CubeShape.h"
 #include "MeshInstance.h"
 #include <memory>
 #include <algorithm>
@@ -33,17 +34,17 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 	auto sphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Sphere"), sphere, *camera);
 	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(3, "LightSphere"), lightSphere, *camera);
 
-	RigidBody floorBody(&planeInstance->transform, 0.0f, true);
-	floorBody.collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
+	auto floorBody = std::make_shared<RigidBody>(&planeInstance->transform, 0.0f, true);
+	floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
 
-	RigidBody sphereBody(&sphereInstance->transform, 1.0f, false);
-	sphereBody.collider = std::make_unique<SphereCollider>(sphereInstance->transform.origin, 1.0f);
+	auto sphereBody = std::make_shared<RigidBody>(&sphereInstance->transform, 1.0f, false);
+	sphereBody->collider = std::make_unique<SphereCollider>(sphereInstance->transform.origin, 1.0f);
 
-	planeInstance->transform.Translate(Vector3(0.0f, 0.0f, 0.0f));
+	planeInstance->transform.Translate(Vector3(0.0f, 1.0f, 0.0f));
 	planeInstance->transform.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
-	planeInstance->transform.Scale(Vector3(10.f, 0.0f, 10.0f));
+	planeInstance->transform.Scale(Vector3(1.f, 0.0f, 1.0f));
 
-	sphereInstance->transform.Translate(Vector3(0.0f, 2.5f, 0.0f));
+	sphereInstance->transform.Translate(Vector3(0.0f, 10.0f, 0.0f));
 	
 	Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
 	Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
@@ -69,8 +70,8 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 	sceneRoot->AddChild(std::move(lightSphereInstance));
 
 	// Add Rigid Bodies to Physic World
-	PhysicWorld::Get().AddRigidBody(std::make_shared<RigidBody>(floorBody));
-	PhysicWorld::Get().AddRigidBody(std::make_shared<RigidBody>(sphereBody));
+	PhysicWorld::Get().AddRigidBody(floorBody);
+	PhysicWorld::Get().AddRigidBody(sphereBody);
 }
 
 EngineModeLayer::~EngineModeLayer()

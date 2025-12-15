@@ -8,7 +8,7 @@ CollisionPoints CollisionDetector::TestCollision(const Collider* p_collider1, co
 		{ nullptr, &CollisionDetector::TestBoxPlane, &CollisionDetector::TestBoxBox },
 		{ nullptr, nullptr, &CollisionDetector::TestPlanePlane }
 	};
-	bool swap = p_collider2->GetColliderType() > p_collider1->GetColliderType();
+	bool swap = p_collider1->GetColliderType() > p_collider2->GetColliderType();
 
 	if (swap)
 	{
@@ -27,7 +27,7 @@ CollisionPoints CollisionDetector::TestCollision(const Collider* p_collider1, co
 
 CollisionPoints CollisionDetector::TestSphereSphere(const Collider* p_collider1, const Collider* p_collider2)
 {
-	assert(p_collider1->GetColliderType() != COLLIDER_SPHERE || p_collider2->GetColliderType() != COLLIDER_SPHERE);
+	assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_SPHERE);
 	auto s1 = static_cast<const SphereCollider*>(p_collider1);
 	auto s2 = static_cast<const SphereCollider*>(p_collider2);
 
@@ -54,7 +54,7 @@ CollisionPoints CollisionDetector::TestSphereSphere(const Collider* p_collider1,
 
 CollisionPoints CollisionDetector::TestSpherePlane(const Collider* p_collider1, const Collider* p_collider2)
 {
-	assert(p_collider1->GetColliderType() != COLLIDER_SPHERE || p_collider2->GetColliderType() != COLLIDER_PLANE);
+	assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_PLANE);
 	auto sphere = static_cast<const SphereCollider*>(p_collider1);
 	auto plane = static_cast<const PlaneCollider*>(p_collider2);
 
@@ -78,7 +78,7 @@ CollisionPoints CollisionDetector::TestSpherePlane(const Collider* p_collider1, 
 
 CollisionPoints CollisionDetector::TestSphereBox(const Collider* p_collider1, const Collider* p_collider2)
 {
-	assert(p_collider1->GetColliderType() != COLLIDER_SPHERE || p_collider2->GetColliderType() != COLLIDER_BOX);
+	assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_BOX);
 	auto sphere = static_cast<const SphereCollider*>(p_collider1);
 	auto box = static_cast<const BoxCollider*>(p_collider2);
 
@@ -110,12 +110,64 @@ CollisionPoints CollisionDetector::TestSphereBox(const Collider* p_collider1, co
 
 CollisionPoints CollisionDetector::TestBoxBox(const Collider* p_collider1, const Collider* p_collider2)
 {
-	return CollisionPoints();
+	assert(p_collider1->GetColliderType() == COLLIDER_BOX || p_collider2->GetColliderType() == COLLIDER_BOX);
+	auto box1 = static_cast<const BoxCollider*>(p_collider1);
+	auto box2 = static_cast<const BoxCollider*>(p_collider2);
+
+	Vector3 T = box2->center - box1->center;
+
+	float minPenetration = FLT_MAX;
+	Vector3 bestAxis;
+
+	auto TestAxis = [&](const Vector3& axis)
+		{
+			if (axis.LengthSquared() < 1e-6f)
+				return true;
+
+			float aProj =
+				Math::Abs(axis.Dot(box1->orientation.GetColumn(0))) * box1->halfExtents.x +
+				Math::Abs(axis.Dot(box1->orientation.GetColumn(1))) * box1->halfExtents.y +
+				Math::Abs(axis.Dot(box1->orientation.GetColumn(2))) * box1->halfExtents.z;
+
+			float bProj =
+				Math::Abs(axis.Dot(box2->orientation.GetColumn(0))) * box2->halfExtents.x +
+				Math::Abs(axis.Dot(box2->orientation.GetColumn(1))) * box2->halfExtents.y +
+				Math::Abs(axis.Dot(box2->orientation.GetColumn(2))) * box2->halfExtents.z;
+
+			float dist = Math::Abs(T.Dot(axis));
+
+			float overlap = aProj + bProj - dist;
+			if (overlap < 0)
+				return false;
+
+			if (overlap < minPenetration)
+			{
+				minPenetration = overlap;
+				bestAxis = axis;
+			}
+
+			return true;
+		};
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (!TestAxis(box1->orientation.GetColumn(i))) return {};
+		if (!TestAxis(box2->orientation.GetColumn(i))) return {};
+	}
+
+	CollisionPoints cp;
+	cp.hasCollision = true;
+	cp.normal = bestAxis.Normalized();
+	cp.penetrationDepth = minPenetration;
+	cp.pointA = box1->center;
+	cp.pointB = box2->center;
+
+	return cp;
 }
 
 CollisionPoints CollisionDetector::TestBoxPlane(const Collider* p_collider1, const Collider* p_collider2)
 {
-	assert(p_collider1->GetColliderType() != COLLIDER_SPHERE || p_collider2->GetColliderType() != COLLIDER_BOX);
+	assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_BOX);
 	auto box = static_cast<const BoxCollider*>(p_collider1);
 	auto plane = static_cast<const PlaneCollider*>(p_collider2);
 	float r =
@@ -140,7 +192,7 @@ CollisionPoints CollisionDetector::TestBoxPlane(const Collider* p_collider1, con
 
 CollisionPoints CollisionDetector::TestPlanePlane(const Collider* p_collider1, const Collider* p_collider2)
 {
-	assert(p_collider1->GetColliderType() != COLLIDER_PLANE || p_collider2->GetColliderType() != COLLIDER_PLANE);
+	assert(p_collider1->GetColliderType() == COLLIDER_PLANE || p_collider2->GetColliderType() == COLLIDER_PLANE);
 	const PlaneCollider* p1 = static_cast<const PlaneCollider*>(p_collider1);
 	const PlaneCollider* p2 = static_cast<const PlaneCollider*>(p_collider2);
 
