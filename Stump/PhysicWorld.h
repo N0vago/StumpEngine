@@ -2,11 +2,13 @@
 #define ST_PHYSIC_WORLD_H
 
 #include "RigidBody.h"
+#include "functional"
 
-#include <vector>
-#include <memory>
-#include <functional>
-
+struct Collision {
+	std::shared_ptr<RigidBody> bodyA;
+	std::shared_ptr<RigidBody> bodyB;
+	CollisionPoints points;
+};
 
 
 class PhysicWorld
@@ -14,8 +16,12 @@ class PhysicWorld
 	std::vector<std::shared_ptr<RigidBody>> rigidBodies;
 	Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
 
-	std::function<void(const Collision&, float)> onCollision;
+	std::function<void(const Collision&)> onCollision;
 public:
+
+	PhysicWorld();
+	~PhysicWorld();
+
 	void AddRigidBody(std::shared_ptr<RigidBody> p_rigidBody) {
 		rigidBodies.push_back(p_rigidBody);
 	}
@@ -29,10 +35,16 @@ public:
 		return gravity;
 	}
 	void StepSimulation(float deltaTime);
-private: 
-	void ResolveCollisions(float deltaTime);
 
-	void 
+	static PhysicWorld& Get();
+private: 
+	void BroadPhase(std::vector<Collision>& r_out);
+	void NarrowPhase(Collision& potentialCollision);
+	void ResolveCollision(Collision& collision);
+	void ApplyImpulse(Collision& collision);
+	void ApplyAngularImpulse(Collision& collision);
+
+
 };
 #endif // ST_PHYSIC_WORLD_H
 

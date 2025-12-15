@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "Camera.h"
 #include "RenderManager.h"
+#include "PhysicWorld.h"
 #include "InputManager.h"
 
 class SceneNode;

@@ -10,9 +10,10 @@ class SceneNode : public Object
 {
 	SceneNode* parent;
 	std::vector<std::unique_ptr<SceneNode>> children;
+public:
+
 	Matrix3x4 transform;
 
-public:
 	SceneNode(const ObjectInfo& p_info);
 	~SceneNode();
 
@@ -20,10 +21,6 @@ public:
 
 	void AddChild(std::unique_ptr<SceneNode> p_child);
 	void RemoveChild(SceneNode* p_child);
-
-	void SetTransform(const Matrix3x4& p_transform) { transform = p_transform; }
-	const Matrix3x4& GetTransform() const { return transform; }
-
 
 	void EnterTree();
 	void ExitTree();

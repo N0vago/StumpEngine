@@ -5,12 +5,15 @@ void RigidBody::Integrate(float deltaTime)
 	if (isStatic) {
 		return;
 	}
-	// a = F / m
+	//Linear integration
 	Vector3 acceleration = force / mass;
-	// v = v0 + a * dt
 	velocity += acceleration * deltaTime;
-	// p = p0 + v * dt
-	position += velocity * deltaTime;
+	transform->origin += velocity * deltaTime;
+	//Angular integration
+	angularVelocity += torque / inertia * deltaTime;
+	transform->Rotate(angularVelocity, angularVelocity.Length() * deltaTime);
+
 	// Reset force
 	force = Vector3(0, 0, 0);
+	torque = Vector3(0, 0, 0);
 }

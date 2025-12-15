@@ -3,11 +3,14 @@
 
 int main()
 {
+	RenderManager renderManager = RenderManager();
+	PhysicWorld physicWorld = PhysicWorld();
+
 	Core::AppInfo appInfo;
 	appInfo.Name = "Architecture";
 	appInfo.WindowInfo.Width = 1920;
 	appInfo.WindowInfo.Height = 1080;
-	RenderManager renderManager = RenderManager();
+
 	Core::Application application(appInfo);
 	application.PushLayer<EngineModeLayer>();
 	application.Run();

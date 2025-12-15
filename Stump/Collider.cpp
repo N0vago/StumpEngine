@@ -141,8 +141,8 @@ CollisionPoints CollisionDetector::TestBoxPlane(const Collider* p_collider1, con
 CollisionPoints CollisionDetector::TestPlanePlane(const Collider* p_collider1, const Collider* p_collider2)
 {
 	assert(p_collider1->GetColliderType() != COLLIDER_PLANE || p_collider2->GetColliderType() != COLLIDER_PLANE);
-	const PlaneCollider* p1 = static_cast<const PlaneCollider*>(a);
-	const PlaneCollider* p2 = static_cast<const PlaneCollider*>(b);
+	const PlaneCollider* p1 = static_cast<const PlaneCollider*>(p_collider1);
+	const PlaneCollider* p2 = static_cast<const PlaneCollider*>(p_collider2);
 
 	if (Math::Abs(p1->normal.Dot(p2->normal)) < 0.999f)
 		return {};
@@ -158,3 +158,37 @@ CollisionPoints CollisionDetector::TestPlanePlane(const Collider* p_collider1, c
 
 	return cp;
 }
+AABB SphereCollider::GetAABB() const
+{
+	return AABB(center - Vector3(radius, radius, radius), center + Vector3(radius, radius, radius));
+}
+AABB BoxCollider::GetAABB() const
+{
+	Vector3 corners[8];
+	corners[0] = center + orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+	corners[1] = center + orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+	corners[2] = center + orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+	corners[3] = center + orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+	corners[4] = center - orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+	corners[5] = center - orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+	corners[6] = center - orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+	corners[7] = center - orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+	Vector3 min = corners[0];
+	Vector3 max = corners[0];
+	for (int i = 1; i < 8; ++i)
+	{
+		min.x = std::min(min.x, corners[i].x);
+		min.y = std::min(min.y, corners[i].y);
+		min.z = std::min(min.z, corners[i].z);
+		max.x = std::max(max.x, corners[i].x);
+		max.y = std::max(max.y, corners[i].y);
+		max.z = std::max(max.z, corners[i].z);
+	}
+	return AABB(min, max);
+}
+
+AABB PlaneCollider::GetAABB() const
+{
+	return AABB(Vector3(-INFINITY, -INFINITY, -INFINITY), Vector3(INFINITY, INFINITY, INFINITY));
+}
+

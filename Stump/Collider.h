@@ -2,6 +2,7 @@
 #define ST_COLLIDER_H
 
 #include "Matrix3x4.h"
+#include "AABB.h"
 #include <memory>
 
 enum ColliderType {
@@ -22,6 +23,7 @@ class Collider
 {
 public:
 	virtual ColliderType GetColliderType() const = 0;
+	virtual AABB GetAABB() const = 0;
 
 };
 
@@ -56,6 +58,7 @@ public:
 	{
 		return COLLIDER_SPHERE;
 	}
+	virtual AABB GetAABB() const override;
 };
 class BoxCollider : public Collider
 {
@@ -71,6 +74,7 @@ public:
 	{
 		return COLLIDER_BOX;
 	}
+	virtual AABB GetAABB() const override;
 };
 class PlaneCollider : public Collider
 {
@@ -78,13 +82,14 @@ public:
 	Vector3 normal;
 	num_fd distance;
 
-	PlaneCollider(Matrix3x4 p_transform, Vector3 p_normal, num_fd p_distance)
+	PlaneCollider(Vector3 p_normal, num_fd p_distance)
 		: normal(p_normal), distance(p_distance) {
 	}
 	ColliderType GetColliderType() const override
 	{
 		return COLLIDER_PLANE;
 	}
+	virtual AABB GetAABB() const override;
 };
 #endif // ST_COLLIDER_H
 
