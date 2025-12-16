@@ -137,7 +137,6 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CubeShape.cpp" />
     <ClCompile Include="EngineModeLayer.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Layer.cpp" />
@@ -176,11 +175,9 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Collider.h" />
-    <ClInclude Include="Component.h" />
     <ClInclude Include="CubeShape.h" />
     <ClInclude Include="EngineModeLayer.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputEvents.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Layer.h" />

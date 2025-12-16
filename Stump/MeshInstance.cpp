@@ -1,8 +1,8 @@
-#include "ObjectInstance.h"
+#include "MeshInstance.h"
 #include "RenderManager.h"
 
 #include <array>
-void ObjectInstance::OnRender()
+void MeshInstance::OnRender()
 {
 	mesh->GetShader().SetMat4("camMatrix", camera.cameraMatrix.matrix[0], false, true);
 	mesh->GetShader().SetMat4("model", transform.ToRenderMatrix().data(), true, true);
@@ -10,18 +10,18 @@ void ObjectInstance::OnRender()
 	mesh->Draw();
 }
 
-void ObjectInstance::Update(float p_deltaTime)
+void MeshInstance::Update(float p_deltaTime)
 {
 	SceneNode::Update(p_deltaTime);
 
 }
 
-void ObjectInstance::OnAwake()
+void MeshInstance::OnAwake()
 {
 	SceneNode::OnAwake();
 	RenderManager::Get().AddToRender(this);
 }
-void ObjectInstance::OnSleep()
+void MeshInstance::OnSleep()
 {
 	SceneNode::OnSleep();
 	RenderManager::Get().RemoveFromRender(this);

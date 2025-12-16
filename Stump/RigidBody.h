@@ -2,9 +2,9 @@
 #define ST_RIGID_BODY_H
 #include "Vector3.h"
 #include "Collider.h"
-#include "Component.h"
 
-class RigidBody : public Component
+
+class RigidBody
 {
 public:
 	Matrix3x4* transform;
@@ -27,16 +27,13 @@ public:
 	}
 	~RigidBody() {}
 
+	void Integrate(float deltaTime);
 
 	Vector3 GetPosition() const { return transform->origin; }
 	Vector3 GetVelocity() const { return velocity; }
 
 	void ApplyForce(const Vector3& p_force) { force += p_force; }
 	void SetVelocity(const Vector3& p_velocity) { velocity = p_velocity; }
-private:
-	void Integrate(float deltaTime);
-
-	friend class PhysicWorld;
 };
 #endif // ST_RIGID_BODY_H
 

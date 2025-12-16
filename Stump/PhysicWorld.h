@@ -35,12 +35,14 @@ public:
 	void StepSimulation(float deltaTime);
 
 	static PhysicWorld& Get();
-private:
+private: 
 	void BroadPhase(std::vector<Collision>& r_out);
 	void NarrowPhase(Collision& potentialCollision);
 	void ResolveCollision(Collision& collision);
 	void ApplyImpulse(Collision& collision);
 	void ApplyAngularImpulse(Collision& collision);
+
+
 };
 #endif // ST_PHYSIC_WORLD_H
 

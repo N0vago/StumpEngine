@@ -13,7 +13,7 @@ void CubeShape::GenerateVertices()
 {
     const float half = size * 0.5f;
 
-    vertices = {
+    std::vector<Vertex> vertices = {
         // Front face
         { Vector3(-half, -half,  half), Vector3(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f) },
         { Vector3(half, -half,  half), Vector3(0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f) },
@@ -53,7 +53,7 @@ void CubeShape::GenerateVertices()
 }
 void CubeShape::GenerateIndices()
 {
-    indices = {
+    std::vector<GLuint> indices = {
             0, 1, 2, 0, 2, 3,         // Front
             4, 5, 6, 4, 6, 7,         // Back
             8, 9, 10, 8, 10, 11,      // Left

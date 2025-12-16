@@ -7,14 +7,12 @@
 #include "VertexArrayObj.h"
 #include "ElementsBufferObj.h"
 #include "VertexBufferObj.h"
-#include "Component.h"
 #include <vector>
 
-class Mesh : public Component
+class Mesh
 {
-protected:
 	VertexArrayObj VAO;
-
+protected:
 	std::vector<Vertex> vertices;
 
 	std::vector<uint32_t> indices;
@@ -22,15 +20,15 @@ protected:
 	std::vector<Texture> meshTextures;
 
 	Shader& meshShader;
+
+	void SetupMesh();
 public:
 
 	Mesh(Shader& p_shader) : meshShader(p_shader) {}
 
 	Mesh(std::vector<Vertex>& r_vertices, std::vector<uint32_t>& r_indices, Shader& p_shader);
 
-	virtual void Awake() override;
-	virtual void Render() override;
-	virtual void Destroy() override;
+	void Draw();
 
 	void ApplyTexture(std::vector<Texture> textures);
 

@@ -56,9 +56,6 @@
     <Filter Include="Code Base\Object\Physic">
       <UniqueIdentifier>{ed227603-b238-447f-af01-bd4b6f6a7444}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code Base\Object\GameObject">
-      <UniqueIdentifier>{1e613f79-fa7a-4cfd-baa3-263d7d66a50f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb.cpp">
@@ -172,9 +169,6 @@
     </ClCompile>
     <ClCompile Include="PhysicWorld.cpp">
       <Filter>Code Base\Object\Physic</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Code Base\Object\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,12 +289,6 @@
     </ClInclude>
     <ClInclude Include="PhysicWorld.h">
       <Filter>Code Base\Object\Physic</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Code Base\Object\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Code Base\Object\GameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,8 +4,8 @@
 CollisionPoints CollisionDetector::TestCollision(const Collider* p_collider1, const Collider* p_collider2)
 {
 	static const FindContactFunc collisionTesters[3][3] = {
-		{ &CollisionDetector::TestSphereSphere, &CollisionDetector::TestSphereBox, &CollisionDetector::TestSpherePlane },
-		{ nullptr, &CollisionDetector::TestBoxBox, &CollisionDetector::TestBoxPlane },
+		{ &CollisionDetector::TestSphereSphere, &CollisionDetector::TestSpherePlane, &CollisionDetector::TestSphereBox },
+		{ nullptr, &CollisionDetector::TestBoxPlane, &CollisionDetector::TestBoxBox },
 		{ nullptr, nullptr, &CollisionDetector::TestPlanePlane }
 	};
 	bool swap = p_collider1->GetColliderType() > p_collider2->GetColliderType();
@@ -67,7 +67,7 @@ CollisionPoints CollisionDetector::TestSpherePlane(const Collider* p_collider1, 
 	CollisionPoints cp;
 	cp.hasCollision = true;
 
-	cp.normal = -plane->normal;
+	cp.normal = plane->normal;
 	cp.penetrationDepth = sphere->radius - distance;
 
 	cp.pointA = sphere->center - plane->normal * distance;
