@@ -3,16 +3,20 @@
 #include "PlaneShape.h"
 #include "SphereShape.h"
 #include "CubeShape.h"
-#include "MeshInstance.h"
+#include "ObjectInstance.h"
 #include <memory>
 #include <algorithm>
+
+static std::unique_ptr<Camera> camPtr = nullptr;
 
 EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "default.frag")), lightShader(Shader("light.vert", "light.frag")) {
 
 	float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
 	float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
 
-	camera = std::make_unique<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
+	camPtr = std::make_unique<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
+
+
 	inputManager = std::make_unique<InputManager>(InputManager());
 	sceneRoot = std::make_unique<SceneNode>(ObjectInfo(0, "Root"));
 
@@ -25,24 +29,27 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 
 
 	// Create Shapes
-	auto plane = std::make_shared<PlaneShape>(10.0f, 10.0f, defaultShader);
+	auto plane = std::make_shared<CubeShape>(1.0f, defaultShader);
 	auto sphere = std::make_shared<SphereShape>(1.0f, 18, 9, defaultShader);
 	auto lightSphere = std::make_shared<SphereShape>(1.0f, 18, 9, lightShader);
 
 	// Create Mesh Instances
-	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), plane, *camera);
-	auto sphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Sphere"), sphere, *camera);
-	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(3, "LightSphere"), lightSphere, *camera);
+	auto planeInstance = std::make_unique<ObjectInstance>(ObjectInfo(1, "Floor"), plane, *camera);
+	planeInstance->AddComponent<CubeShape>(1.0f, defaultShader); 
+	planeInstance->AddComponent<RigidBody>(&planeInstance->transform, 0.0f, true);
+	planeInstance->AddComponent<BoxCollider>(planeInstance->transform.origin, Vector3(4.0f, 3.0f, 4.0f), planeInstance->transform.mat3);
+	auto sphereInstance = std::make_unique<ObjectInstance>(ObjectInfo(2, "Sphere"), sphere, *camera);
+	auto lightSphereInstance = std::make_unique<ObjectInstance>(ObjectInfo(3, "LightSphere"), lightSphere, *camera);
 
 	auto floorBody = std::make_shared<RigidBody>(&planeInstance->transform, 0.0f, true);
-	floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
+	floorBody->collider = std::make_unique<BoxCollider>(planeInstance->transform.origin, Vector3(4.0f, 3.0f, 4.0f), planeInstance->transform.mat3);
 
 	auto sphereBody = std::make_shared<RigidBody>(&sphereInstance->transform, 1.0f, false);
 	sphereBody->collider = std::make_unique<SphereCollider>(sphereInstance->transform.origin, 1.0f);
 
-	planeInstance->transform.Translate(Vector3(0.0f, 1.0f, 0.0f));
+	planeInstance->transform.Translate(Vector3(0.0f, -10.0f, 0.0f));
 	planeInstance->transform.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
-	planeInstance->transform.Scale(Vector3(1.f, 0.0f, 1.0f));
+	planeInstance->transform.Scale(Vector3(10.0f, 2.0f, 10.0f));
 
 	sphereInstance->transform.Translate(Vector3(0.0f, 10.0f, 0.0f));
 	
@@ -76,6 +83,7 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 
 EngineModeLayer::~EngineModeLayer()
 {
+	camPtr = nullptr;
 }
 
 void EngineModeLayer::OnUpdate(float p_ts)
@@ -180,5 +188,10 @@ void EngineModeLayer::CameraRotate(float& r_deltaTime) {
 	camera->Orientation.RotateAroundAxis(camera->Up, -rotY);
 
 	glfwSetCursorPos(window, (width / 2), (height / 2));
+}
+
+Camera& EngineModeLayer::GetEditorCamera()
+{
+	return *camPtr;
 }
 

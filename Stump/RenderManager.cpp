@@ -1,4 +1,5 @@
 ﻿#include "RenderManager.h"
+#include "Mesh.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -28,20 +29,20 @@ void RenderManager::DrawMeshes()
     {
         if (meshes.size() == 0) break;
 
-		mesh->OnRender();
+		mesh->Render();
     }
 
 }
 
-void RenderManager::AddToRender(MeshInstance* p_mesh) {
+void RenderManager::AddToRender(Mesh* p_mesh) {
     if (!p_mesh)
         return;
     meshes.push_back(p_mesh);
 }
 
-void RenderManager::RemoveFromRender(MeshInstance* p_mesh) {
+void RenderManager::RemoveFromRender(Mesh* p_mesh) {
     meshes.erase(std::remove_if(meshes.begin(), meshes.end(),
-        [p_mesh](MeshInstance* mesh) {
+        [p_mesh](Mesh* mesh) {
             return mesh == p_mesh;
         }), meshes.end());
 }

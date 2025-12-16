@@ -31,6 +31,8 @@ private:
 	void CameraMove(float& r_deltaTime);
 
 	void CameraRotate(float& r_deltaTime);
+
+	static Camera& GetEditorCamera();
 	
 };
 #endif // ST_ENGINE_LAYER_H

@@ -3,6 +3,7 @@
 
 #include "Matrix3x4.h"
 #include "AABB.h"
+#include "Component.h"
 #include <memory>
 
 enum ColliderType {
@@ -19,7 +20,7 @@ struct CollisionPoints {
 	bool hasCollision;
 };
 
-class Collider
+class Collider : public Component
 {
 public:
 	virtual ColliderType GetColliderType() const = 0;

@@ -8,6 +8,7 @@
 
 class SceneNode : public Object
 {
+protected:
 	SceneNode* parent;
 	std::vector<std::unique_ptr<SceneNode>> children;
 public:
@@ -24,10 +25,6 @@ public:
 
 	void EnterTree();
 	void ExitTree();
-
-	virtual void OnAwake();
-
-	virtual void OnSleep();
 
 	virtual void Update(float p_deltaTime);
 

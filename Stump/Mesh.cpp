@@ -1,13 +1,8 @@
 #include "Mesh.h"
 #include "Camera.h"
-
+#include "RenderManager.h"
 
 Mesh::Mesh(std::vector<Vertex>& r_vertices, std::vector<uint32_t>& r_indices, Shader& p_shader) : vertices(r_vertices), indices(r_indices), meshShader(p_shader)
-{
-    SetupMesh();
-}
-
-void Mesh::SetupMesh()
 {
     VAO.Bind();
 
@@ -22,6 +17,28 @@ void Mesh::SetupMesh()
     VAO.Unbind();
     VBO.Unbind();
     EBO.Unbind();
+}
+
+void Mesh::Awake()
+{
+	RenderManager::Get().AddToRender(this);
+}
+
+void Mesh::Render()
+{
+    meshShader.Activate();
+
+    VAO.Bind();
+
+    glDrawElements(GL_TRIANGLES,
+        indices.size(),
+        GL_UNSIGNED_INT,
+        0);
+}
+
+void Mesh::Destroy()
+{
+	RenderManager::Get().RemoveFromRender(this);
 }
 
 void Mesh::ApplyTexture(std::vector<Texture> textures) {
@@ -45,17 +62,4 @@ void Mesh::ApplyTexture(std::vector<Texture> textures) {
         textures[i].TextureUnit(meshShader, (type + num).c_str(), i);
         textures[i].Bind();
     }
-}
-
-
-void Mesh::Draw()
-{
-    meshShader.Activate();
-
-    VAO.Bind();
-
-    glDrawElements(GL_TRIANGLES,
-        indices.size(),
-        GL_UNSIGNED_INT,
-        0);
 }

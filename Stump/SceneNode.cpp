@@ -57,8 +57,6 @@ void SceneNode::EnterTree()
 	if(isInTree)
 		return;
 
-	OnAwake();
-
 	isInTree = true;
 
 	for (auto& child : children)
@@ -72,7 +70,6 @@ void SceneNode::ExitTree()
 	if(!isInTree)
 		return;
 
-	OnSleep();
 
 	isInTree = false;
 	for (auto& child : children)
@@ -81,26 +78,15 @@ void SceneNode::ExitTree()
 	}
 }
 
-void SceneNode::OnAwake()
-{
-	std::cout << "SceneNode " << info.name << " awakened." << std::endl;
-}
-
-void SceneNode::OnSleep()
-{
-	std::cout << "SceneNode " << info.name << " slept." << std::endl;
-}
-
 void SceneNode::Update(float p_deltaTime)
 {
-	if (!isInTree)
+	if(!isInTree)
 		return;
 
-	if (children.size() == 0)
-		return;
 
 	for (auto& child : children)
 	{
 		child->Update(p_deltaTime);
 	}
 }
+
