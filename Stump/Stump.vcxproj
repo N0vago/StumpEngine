@@ -140,6 +140,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Layer.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix3x3.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />
@@ -159,7 +160,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ElementsBufferObj.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="main.cpp" />
@@ -181,6 +181,7 @@
     <ClInclude Include="InputEvents.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Layer.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix3x3.h" />
     <ClInclude Include="Matrix4x4.h" />
@@ -194,7 +195,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ElementsBufferObj.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="SceneNode.h" />

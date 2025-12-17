@@ -1,17 +1,17 @@
 #include "Texture.h"
+#include <stdexcept>
 
+Texture::Texture(const char* p_image, TextureType p_textureType, GLuint p_slot) {
 
-Texture::Texture(const char* image, const char* textureType, GLenum slot) {
-
-    type = textureType;
+    type = p_textureType;
     
     int widthImage, heightImage, numColCh;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* bytes = stbi_load(image, &widthImage, &heightImage, &numColCh, 0);
+    unsigned char* bytes = stbi_load(p_image, &widthImage, &heightImage, &numColCh, 0);
 
     glGenTextures(1, &ID);
-    glActiveTexture(GL_TEXTURE0 + slot);
-	unit = slot;
+    glActiveTexture(GL_TEXTURE0 + p_slot);
+	unit = p_slot;
     glBindTexture(GL_TEXTURE_2D, ID);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -66,12 +66,6 @@ Texture::Texture(const char* image, const char* textureType, GLenum slot) {
 
     stbi_image_free(bytes);
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Texture::TextureUnit(Shader& shader, const char* uniform, GLuint unit) {
-    shader.Activate();
-
-    glUniform1i(glGetUniformLocation(shader.ID, uniform), unit);
 }
 
 void Texture::Bind() {

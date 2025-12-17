@@ -25,6 +25,8 @@ public:
 
 	void CompileErrors(unsigned int p_shader, const char* p_type);
 
+	void SetInt(const char* p_name, int p_value, bool p_useShader = false);
+
 	void SetFloat(const char* p_name, float p_value, bool p_useShader = false);
 
 	void SetFloat3(const char* p_name, float p_x, float p_y, float p_z, bool p_useShader = false);

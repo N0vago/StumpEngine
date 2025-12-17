@@ -1,4 +1,5 @@
 #include "SceneNode.h"
+#include <iostream>
 #include <algorithm>
 SceneNode::SceneNode(const ObjectInfo& p_info) : Object(p_info)
 {

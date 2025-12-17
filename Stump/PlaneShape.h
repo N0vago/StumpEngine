@@ -7,7 +7,7 @@ class PlaneShape : public Shape
 	float width;
 	float height;
 public:
-	PlaneShape(float p_width, float p_height, Shader& p_shader);
+	PlaneShape(float p_width, float p_height);
 private:
 	virtual void GenerateVertices() override;
 	virtual void GenerateIndices() override;

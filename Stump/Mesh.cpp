@@ -2,9 +2,17 @@
 #include "Camera.h"
 
 
-Mesh::Mesh(std::vector<Vertex>& r_vertices, std::vector<uint32_t>& r_indices, Shader& p_shader) : vertices(r_vertices), indices(r_indices), meshShader(p_shader)
+Mesh::Mesh()
+{
+}
+
+Mesh::Mesh(std::vector<Vertex>& r_vertices, std::vector<uint32_t>& r_indices) : vertices(r_vertices), indices(r_indices)
 {
     SetupMesh();
+}
+
+Mesh::~Mesh()
+{
 }
 
 void Mesh::SetupMesh()
@@ -24,34 +32,9 @@ void Mesh::SetupMesh()
     EBO.Unbind();
 }
 
-void Mesh::ApplyTexture(std::vector<Texture> textures) {
-    meshTextures = textures;
-
-    unsigned int numDiffuse = 0;
-    unsigned int numSpecular = 0;
-
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        std::string num;
-        std::string type = textures[i].type;
-        if (type == "diffuse")
-        {
-            num = std::to_string(numDiffuse++);
-        }
-        else if (type == "specular")
-        {
-            num = std::to_string(numSpecular++);
-        }
-        textures[i].TextureUnit(meshShader, (type + num).c_str(), i);
-        textures[i].Bind();
-    }
-}
-
 
 void Mesh::Draw()
 {
-    meshShader.Activate();
-
     VAO.Bind();
 
     glDrawElements(GL_TRIANGLES,

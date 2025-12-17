@@ -1,12 +1,10 @@
 #include "PlaneShape.h"
 
-PlaneShape::PlaneShape(float p_width, float p_height, Shader& p_shader) : Shape(p_shader), width(p_width), height(p_height)
+PlaneShape::PlaneShape(float p_width, float p_height) : width(p_width), height(p_height)
 {
     GenerateVertices();
 	GenerateIndices();
 	SetupMesh();
-
-	std::cout << "Created PlaneShape with width: " << width << " and height: " << height << std::endl;
 }
 
 void PlaneShape::GenerateVertices()

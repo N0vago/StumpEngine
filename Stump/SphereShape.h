@@ -7,7 +7,7 @@ class SphereShape : public Shape
 	int sectorCount;
 	int stackCount;
 public:
-	SphereShape(float p_radius, int p_sectorCount, int p_stackCount, Shader& p_shader);
+	SphereShape(float p_radius, int p_sectorCount, int p_stackCount);
 
 private:
 	virtual void GenerateVertices() override;

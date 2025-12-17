@@ -15,7 +15,7 @@ RenderManager::~RenderManager()
 	Instance = nullptr;
 }
 
-void RenderManager::DrawMeshes()
+void RenderManager::Draw()
 {
 
     glEnable(GL_DEPTH_TEST);
@@ -24,26 +24,33 @@ void RenderManager::DrawMeshes()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-    for(auto& mesh : meshes)
+    for(auto& renderObject : renderObjects)
     {
-        if (meshes.size() == 0) break;
+        if (renderObjects.size() == 0) break;
 
-		mesh->OnRender();
+        renderObject->material->Bind();
+
+        renderObject->material->GetShader()->SetMat4("camMatrix", activeCamera->cameraMatrix.matrix[0], false, true);
+        renderObject->material->GetShader()->SetVec3("camPos", activeCamera->Position, true);
+        renderObject->material->GetShader()->SetMat4("model", renderObject->modelMatrix.ToRenderMatrix().data(), true, true);
+
+        renderObject->mesh->Draw();
+
     }
 
 }
 
-void RenderManager::AddToRender(MeshInstance* p_mesh) {
-    if (!p_mesh)
+void RenderManager::AddToRender(RenderObject* p_renderObject) {
+    if (!p_renderObject)
         return;
-    meshes.push_back(p_mesh);
+    renderObjects.push_back(p_renderObject);
 }
 
-void RenderManager::RemoveFromRender(MeshInstance* p_mesh) {
-    meshes.erase(std::remove_if(meshes.begin(), meshes.end(),
-        [p_mesh](MeshInstance* mesh) {
-            return mesh == p_mesh;
-        }), meshes.end());
+void RenderManager::RemoveFromRender(RenderObject* p_renderObject) {
+    renderObjects.erase(std::remove_if(renderObjects.begin(), renderObjects.end(),
+        [p_renderObject](RenderObject* renderObject) {
+            return renderObject == p_renderObject;
+        }), renderObjects.end());
 }
 
 RenderManager& RenderManager::Get()

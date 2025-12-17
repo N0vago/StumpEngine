@@ -18,55 +18,45 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 
 	Texture textures[] =
 	{
-		Texture("planks.png", "diffuse", 0),
-		Texture("planksSpec.png", "specular", 1)
+		Texture("planks.png", TextureType::Diffuse, 0),
+		Texture("planksSpec.png", TextureType::Specular, 1)
 	};
 	std::vector<Texture> texs(textures, textures + sizeof(textures) / sizeof(Texture));
 
-
-	// Create Shapes
-	auto plane = std::make_shared<PlaneShape>(10.0f, 10.0f, defaultShader);
-	auto sphere = std::make_shared<SphereShape>(1.0f, 18, 9, defaultShader);
-	auto lightSphere = std::make_shared<SphereShape>(1.0f, 18, 9, lightShader);
-
-	// Create Mesh Instances
-	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), plane, *camera);
-	auto sphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Sphere"), sphere, *camera);
-	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(3, "LightSphere"), lightSphere, *camera);
-
-	auto floorBody = std::make_shared<RigidBody>(&planeInstance->transform, 0.0f, true);
-	floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
-
-	auto sphereBody = std::make_shared<RigidBody>(&sphereInstance->transform, 1.0f, false);
-	sphereBody->collider = std::make_unique<SphereCollider>(sphereInstance->transform.origin, 1.0f);
-
-	planeInstance->transform.Translate(Vector3(0.0f, 1.0f, 0.0f));
-	planeInstance->transform.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
-	planeInstance->transform.Scale(Vector3(1.f, 0.0f, 1.0f));
-
-	sphereInstance->transform.Translate(Vector3(0.0f, 10.0f, 0.0f));
-	
 	Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
 	Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
 
-	lightSphereInstance->transform.Translate(lightPos);
+	RenderObject plane;
+	plane.material = std::make_shared<Material>(defaultShader);
+	plane.material->SetTexture(&textures[0]);
+	plane.material->SetTexture(&textures[1]);
+	plane.material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+	plane.material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+	plane.mesh = std::make_shared<PlaneShape>(10.0f, 10.0f);
+	plane.modelMatrix = Matrix3x4();
+	plane.modelMatrix.Translate(Vector3(0.0f, 1.0f, 0.0f));
+	plane.modelMatrix.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
+	plane.modelMatrix.Scale(Vector3(1.f, 0.0f, 1.0f));
 
-	// Apply Textures and Set Shader Uniforms
-	plane->ApplyTexture(texs);
-	plane->GetShader().Activate();
-	plane->GetShader().SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z, true);
-	plane->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1, true);
+	RenderObject lightSphere;
+	lightSphere.material = std::make_shared<Material>(lightShader);
+	lightSphere.mesh = std::make_shared<SphereShape>(1.0f, 18, 9);
+	lightSphere.modelMatrix = Matrix3x4();
+	lightSphere.modelMatrix.Translate(lightPos);
+	lightSphere.material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
 
-	sphere->GetShader().Activate();
+	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), &plane);
+	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Light Sphere"), &lightSphere);
 
-	lightSphere->GetShader().Activate();
-	lightSphere->GetShader().SetMat4("model", lightSphereInstance->transform.ToRenderMatrix().data(), true, true);
-	lightSphere->GetShader().SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1, true);
+	auto floorBody = std::make_shared<RigidBody>(&plane.modelMatrix, 0.0f, true);
+	floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
+
+	auto sphereBody = std::make_shared<RigidBody>(&lightSphere.modelMatrix, 1.0f, false);
+	sphereBody->collider = std::make_unique<SphereCollider>(lightSphere.modelMatrix.origin, 1.0f);
 
 	// Enter Scene Tree
 	sceneRoot->EnterTree();
 	sceneRoot->AddChild(std::move(planeInstance));
-	sceneRoot->AddChild(std::move(sphereInstance));
 	sceneRoot->AddChild(std::move(lightSphereInstance));
 
 	// Add Rigid Bodies to Physic World
@@ -101,7 +91,7 @@ void EngineModeLayer::OnUpdate(float p_ts)
 
 void EngineModeLayer::OnRender()
 {
-	RenderManager::Get().DrawMeshes();
+	RenderManager::Get().Draw();
 }
 
 void EngineModeLayer::OnEvent(Core::Event& event)

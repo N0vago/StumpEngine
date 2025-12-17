@@ -104,6 +104,13 @@ void Shader::CompileErrors(unsigned int p_shader, const char* p_type)
 	}
 }
 
+void Shader::SetInt(const char* p_name, int p_value, bool p_useShader)
+{
+	if (p_useShader)
+		Activate();
+	glUniform1i(glGetUniformLocation(ID, p_name), p_value);
+}
+
 void Shader::SetFloat(const char* p_name, float p_value, bool p_useShader)
 {
 	if (p_useShader)

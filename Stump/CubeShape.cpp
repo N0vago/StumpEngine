@@ -1,5 +1,5 @@
 #include "CubeShape.h"
-CubeShape::CubeShape(float p_size, Shader& p_shader) : Shape(p_shader), size(p_size)
+CubeShape::CubeShape(float p_size) : size(p_size)
 {
     GenerateVertices();
 	GenerateIndices();

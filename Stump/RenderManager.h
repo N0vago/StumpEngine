@@ -1,25 +1,39 @@
 #ifndef ST_RENDER_MANAGER_H
 #define ST_RENDER_MANAGER_H
 
-#include <iostream>
-#include "MeshInstance.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Matrix3x4.h"
+#include "Camera.h"
 
+#include <iostream>
 #include <memory>
 #include <GLFW/glfw3.h>
+struct RenderObject
+{
+	std::shared_ptr<Mesh> mesh;
+	std::shared_ptr<Material> material;
+	Matrix3x4 modelMatrix;
+};
+
 class RenderManager
 {
-	std::vector<MeshInstance*> meshes;
+	std::vector<RenderObject*> renderObjects;
+
+	std::unique_ptr<Camera> activeCamera;
 
 public:
 
 	RenderManager();
 	~RenderManager();
 
-	void DrawMeshes();
+	void Draw();
 
-	void AddToRender(MeshInstance* p_mesh);
+	void AddToRender(RenderObject* p_mesh);
 
-	void RemoveFromRender(MeshInstance* p_mesh);
+	void RemoveFromRender(RenderObject* p_mesh);
+
+	void SetActiveCamera(Camera* p_camera) { activeCamera = std::make_unique<Camera>(p_camera); }
 
 	static RenderManager& Get();
 

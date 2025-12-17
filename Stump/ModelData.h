@@ -8,6 +8,8 @@
 #include "Vector4.h"
 #include "Quaternion.h"
 #include "Mesh.h"
+#include "Matrix3x4.h"
+#include "Texture.h"
 
 using json = nlohmann::json;
 

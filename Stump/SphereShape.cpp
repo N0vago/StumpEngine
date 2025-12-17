@@ -1,12 +1,10 @@
 #include "SphereShape.h"
 
-SphereShape::SphereShape(float p_radius, int p_sectorCount, int p_stackCount, Shader& p_shader) : Shape(p_shader), radius(p_radius), sectorCount(p_sectorCount), stackCount(p_stackCount)
+SphereShape::SphereShape(float p_radius, int p_sectorCount, int p_stackCount) :  radius(p_radius), sectorCount(p_sectorCount), stackCount(p_stackCount)
 {
     GenerateVertices();
     GenerateIndices();
 	SetupMesh();
-
-	std::cout << "Created SphereShape with radius: " << radius << ", sectorCount: " << sectorCount << ", stackCount: " << stackCount << std::endl;
 }
 
 void SphereShape::GenerateVertices()

@@ -6,7 +6,7 @@ class CubeShape : public Shape
 	float size;
 
 public:
-	CubeShape(float p_size, Shader& p_shader);
+	CubeShape(float p_size);
 
 	~CubeShape();
 private:

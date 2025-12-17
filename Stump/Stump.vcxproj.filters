@@ -82,9 +82,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Code Base\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Code Base\Object</Filter>
     </ClCompile>
@@ -154,7 +151,6 @@
     <ClCompile Include="SceneNode.cpp">
       <Filter>Code Base\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="MeshInstance.cpp" />
     <ClCompile Include="Shape.cpp">
       <Filter>Code Base\Object\Shape</Filter>
     </ClCompile>
@@ -170,6 +166,8 @@
     <ClCompile Include="PhysicWorld.cpp">
       <Filter>Code Base\Object\Physic</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MeshInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VertexBufferObj.h">
@@ -185,9 +183,6 @@
       <Filter>Code Base\Object</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Code Base\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
       <Filter>Code Base\Object</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -271,7 +266,6 @@
     <ClInclude Include="SceneNode.h">
       <Filter>Code Base\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="MeshInstance.h" />
     <ClInclude Include="CubeShape.h">
       <Filter>Code Base\Object\Shape</Filter>
     </ClInclude>
@@ -290,6 +284,8 @@
     <ClInclude Include="PhysicWorld.h">
       <Filter>Code Base\Object\Physic</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MeshInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">

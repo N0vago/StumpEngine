@@ -4,7 +4,7 @@
 class Shape : public Mesh
 {
 protected:
-	Shape(Shader& shader) : Mesh(shader) {}
+	Shape() {}
 
 	virtual void GenerateVertices() = 0;
 	virtual void GenerateIndices() = 0;

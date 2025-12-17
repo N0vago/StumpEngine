@@ -3,19 +3,24 @@
 
 #include <glad/glad.h>
 #include <stb/stb_image.h>
-#include "Shader.h"
+
+enum class TextureType {
+	Diffuse,
+	Specular,
+	Normal,
+	Emissive
+};
+
 class Texture
 {
 public:
 	GLuint ID;
 
-	const char* type;
+	TextureType type;
 
 	GLuint unit;
 
-	Texture(const char* image, const char* textureType, GLuint slot);
-
-	void TextureUnit(Shader& shader, const char* uniform, GLuint unit);
+	Texture(const char* p_image, TextureType p_type, GLuint p_slot);
 
 	void Bind();
 

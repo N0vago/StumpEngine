@@ -3,7 +3,6 @@
 
 
 #include "Application.h"
-#include "Camera.h"
 #include "RenderManager.h"
 #include "PhysicWorld.h"
 #include "InputManager.h"
@@ -11,7 +10,7 @@
 class SceneNode;
 class EngineModeLayer : public Core::Layer
 {
-	std::unique_ptr<Camera> camera;
+	std::shared_ptr<Camera> camera;
 	std::unique_ptr<InputManager> inputManager;
 
 	std::unique_ptr<SceneNode> sceneRoot;
