@@ -4,8 +4,18 @@
 #include "Texture.h"
 #include "Vector3.h"
 
+#include <array>
 #include <unordered_map>
-#include <utility>
+#include <variant>
+
+using UniformData = std::variant<
+    int,
+    float,
+    Vector3,
+    std::array<float, 3>,
+    std::array<float, 4>,
+    std::array<float, 16>
+>;
 
 enum class UniformType
 {
@@ -21,20 +31,12 @@ struct UniformValue
 {
     UniformType type;
 
-    union
-    {
-        float f;
-        float f3[3];
-        float f4[4];
-        int i;
-        Vector3 vec3;
-        float* mat4;
-    };
+    UniformData data;
 };
 class Material
 {
 public:
-    explicit Material(std::shared_ptr<Shader> p_shader) : shader(std::move(p_shader)) {}
+    Material(std::shared_ptr<Shader> p_shader) : shader(std::move(p_shader)) {}
 
     void SetTexture(Texture* p_texture);
 
@@ -45,7 +47,7 @@ public:
     void SetFloat3(const std::string& r_name, float p_x, float p_y, float p_z);
     void SetFloat4(const std::string& r_name, float p_x, float p_y, float p_z, float p_w);
     void SetVec3(const std::string& r_name, Vector3& r_value);
-    void SetMat4(const std::string& r_name, float* p_value);
+    void SetMat4(const std::string& r_name, std::array<float, 16> p_value);
 
     Shader* GetShader() const { return shader.get(); }
 

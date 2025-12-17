@@ -135,12 +135,12 @@ void Shader::SetVec3(const char* p_name, Vector3 p_vec, bool p_useShader)
 		Activate();
 	glUniform3f(glGetUniformLocation(ID, p_name), p_vec.x, p_vec.y, p_vec.z);
 }
-void Shader::SetMat4(const char* p_name, const float* p_matrix, bool p_transposed, bool p_useShader)
+void Shader::SetMat4(const char* p_name, std::array<float, 16> p_matrix, bool p_transposed, bool p_useShader)
 {
 	if (p_useShader)
 		Activate();
 	if(p_transposed)
-		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_TRUE, p_matrix);
+		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_TRUE, p_matrix.data());
 	else
-		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_FALSE, p_matrix);
+		glUniformMatrix4fv(glGetUniformLocation(ID, p_name), 1, GL_FALSE, p_matrix.data());
 }

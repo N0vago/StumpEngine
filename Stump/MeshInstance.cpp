@@ -14,7 +14,7 @@ MeshInstance::MeshInstance(const ObjectInfo& r_objectInfo) : SceneNode(r_objectI
 	Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
 
 	RenderObject plane;
-	plane.material = std::make_shared<Material>(Shader("default.vert", "default.frag"));
+	plane.material = std::make_shared<Material>(std::make_shared<Shader>("default.vert", "default.frag"));
 	plane.material->SetTexture(&textures[0]);
 	plane.material->SetTexture(&textures[1]);
 	plane.material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);

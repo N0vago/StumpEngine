@@ -48,6 +48,15 @@ public:
 	static num_fd GetFOVy(num_fd p_fovx, num_fd p_aspect) {
 		return Math::ToDegrees(Math::Atan(p_aspect * Math::Tan(Math::ToRadians(p_fovx) * 0.5)) * 2.0);
 	}
+	std::array<float, 16> ToArray() const
+	{
+		std::array<float, 16> out{};
+		for (int row = 0; row < 4; ++row)
+			for (int col = 0; col < 4; ++col)
+				out[row * 4 + col] = matrix[row][col];
+
+		return out;
+	}
 
 	num_fd GetZFar() const;
 	num_fd GetZNear() const;

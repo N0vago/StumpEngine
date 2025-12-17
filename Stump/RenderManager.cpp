@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <algorithm>
+#include <array>
 
 static RenderManager* Instance = nullptr;
 
@@ -30,9 +31,9 @@ void RenderManager::Draw()
 
         renderObject->material->Bind();
 
-        renderObject->material->GetShader()->SetMat4("camMatrix", activeCamera->cameraMatrix.matrix[0], false, true);
+        renderObject->material->GetShader()->SetMat4("camMatrix", activeCamera->cameraMatrix.ToArray(), false, true);
         renderObject->material->GetShader()->SetVec3("camPos", activeCamera->Position, true);
-        renderObject->material->GetShader()->SetMat4("model", renderObject->modelMatrix.ToRenderMatrix().data(), true, true);
+        renderObject->material->GetShader()->SetMat4("model", renderObject->modelMatrix.ToRenderMatrix(), true, true);
 
         renderObject->mesh->Draw();
 

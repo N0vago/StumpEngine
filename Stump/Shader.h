@@ -7,6 +7,7 @@
 #include<sstream>
 #include<iostream>
 #include<cerrno>
+#include<array>
 
 std::string get_file_contents(const char* filename);
 class Vector3;
@@ -35,6 +36,6 @@ public:
 
 	void SetVec3(const char* p_name, Vector3 p_vec, bool p_useShader = false);
 
-	void SetMat4(const char* p_name, const float* p_matrix, bool p_transposed = false, bool p_useShader = false);
+	void SetMat4(const char* p_name, const std::array<float, 16> p_matrix, bool p_transposed = false, bool p_useShader = false);
 };
 #endif

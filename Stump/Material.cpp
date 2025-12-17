@@ -13,26 +13,49 @@ void Material::Bind() const
         {
 
         case UniformType::Int:
-            shader->SetInt(name.c_str(), uniform.i);
+            shader->SetInt(
+                name.c_str(),
+                std::get<int>(uniform.data)
+            );
             break;
 
         case UniformType::Float:
-            shader->SetFloat(name.c_str(), uniform.f);
+            shader->SetFloat(
+                name.c_str(),
+                std::get<float>(uniform.data)
+            );
             break;
         
         case UniformType::Float3:
-            shader->SetFloat3(name.c_str(), uniform.f3[0], uniform.f3[1], uniform.f3[2]);
+            shader->SetFloat3(
+                name.c_str(),
+                std::get<std::array<float, 3>>(uniform.data).at(0), 
+                std::get<std::array<float, 3>>(uniform.data).at(1),
+                std::get<std::array<float, 3>>(uniform.data).at(2)
+            );
             break;
         case UniformType::Float4:
-            shader->SetFloat4(name.c_str(), uniform.f4[0], uniform.f4[1], uniform.f4[2], uniform.f4[3]);
+            shader->SetFloat4(
+                name.c_str(), 
+                std::get<std::array<float, 4>>(uniform.data).at(0),
+                std::get<std::array<float, 4>>(uniform.data).at(1), 
+                std::get<std::array<float, 4>>(uniform.data).at(2), 
+                std::get<std::array<float, 4>>(uniform.data).at(3)
+            );
             break;
 
         case UniformType::Vec3:
-            shader->SetVec3(name.c_str(), uniform.vec3);
+            shader->SetVec3(
+                name.c_str(),
+                std::get<Vector3>(uniform.data)
+            );
             break;
 
         case UniformType::Mat4:
-            shader->SetMat4(name.c_str(), uniform.mat4);
+            shader->SetMat4(
+                name.c_str(),
+                std::get<std::array<float, 16>>(uniform.data)
+            );
             break;
         }
 
@@ -61,30 +84,30 @@ void Material::Bind() const
 }
 void Material::SetFloat(const std::string& r_name, float p_value)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Float, .f = p_value };
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Float, p_value });
 }
 
 void Material::SetFloat3(const std::string& r_name, float p_x, float p_y, float p_z)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Float3, .f3 = { p_x, p_y, p_z } };
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Float3, std::array<float, 3>{ p_x, p_y, p_z } });
 }
 
 void Material::SetFloat4(const std::string& r_name, float p_x, float p_y, float p_z, float p_w)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Float4, .f4 = { p_x, p_y, p_z, p_w } };
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Float4, std::array<float, 4>{ p_x, p_y, p_z, p_w } });
 }
 
 void Material::SetInt(const std::string& r_name, int p_value)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Int, .i = p_value };
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Int,  p_value });
 }
 
 void Material::SetVec3(const std::string& r_name, Vector3& r_value)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Vec3, .vec3 = r_value};
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Vec3, r_value});
 }
 
-void Material::SetMat4(const std::string& r_name, float* p_value)
+void Material::SetMat4(const std::string& r_name, std::array<float, 16> p_value)
 {
-    uniforms[r_name] = UniformValue{ .type = UniformType::Mat4, .mat4 = p_value };
+    uniforms.insert_or_assign(r_name, UniformValue{ UniformType::Mat4, std::array<float, 16>(p_value) });
 }
