@@ -15,8 +15,8 @@ class EngineModeLayer : public Core::Layer
 
 	std::unique_ptr<SceneNode> sceneRoot;
 
-	Shader defaultShader;
-	Shader lightShader;
+	std::shared_ptr<Shader> defaultShader;
+	std::shared_ptr<Shader> lightShader;
 public:
 	EngineModeLayer();
 	virtual ~EngineModeLayer();

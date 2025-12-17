@@ -27,7 +27,7 @@ MeshInstance::MeshInstance(const ObjectInfo& r_objectInfo) : SceneNode(r_objectI
 
 }
 
-MeshInstance::MeshInstance(const ObjectInfo& r_objectInfo, RenderObject* p_renderObject) : SceneNode(r_objectInfo), renderObject(std::make_unique<RenderObject>(p_renderObject))
+MeshInstance::MeshInstance(const ObjectInfo& r_objectInfo, std::shared_ptr<RenderObject> p_renderObject) : SceneNode(r_objectInfo), renderObject(std::move(p_renderObject))
 {
 }
 

@@ -20,7 +20,7 @@ class RenderManager
 {
 	std::vector<RenderObject*> renderObjects;
 
-	std::unique_ptr<Camera> activeCamera;
+	std::shared_ptr<Camera> activeCamera;
 
 public:
 
@@ -33,7 +33,7 @@ public:
 
 	void RemoveFromRender(RenderObject* p_mesh);
 
-	void SetActiveCamera(Camera* p_camera) { activeCamera = std::make_unique<Camera>(p_camera); }
+	void SetActiveCamera(std::shared_ptr<Camera> p_camera) { activeCamera = std::move(p_camera); }
 
 	static RenderManager& Get();
 

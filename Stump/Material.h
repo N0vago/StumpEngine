@@ -34,7 +34,7 @@ struct UniformValue
 class Material
 {
 public:
-    explicit Material(Shader* p_shader) : shader(p_shader) {}
+    explicit Material(std::shared_ptr<Shader> p_shader) : shader(std::move(p_shader)) {}
 
     void SetTexture(Texture* p_texture);
 

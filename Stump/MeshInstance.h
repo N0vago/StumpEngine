@@ -11,7 +11,7 @@ public:
 
 	MeshInstance(const ObjectInfo& r_objectInfo);
 
-	MeshInstance(const ObjectInfo& r_objectInfo, RenderObject* p_renderObject);
+	MeshInstance(const ObjectInfo& r_objectInfo, std::shared_ptr<RenderObject> p_renderObject);
 
 	virtual void OnAwake() override;
 

@@ -7,7 +7,7 @@
 #include <memory>
 #include <algorithm>
 
-EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "default.frag")), lightShader(Shader("light.vert", "light.frag")) {
+EngineModeLayer::EngineModeLayer() : defaultShader(std::make_shared<Shader>("default.vert", "default.frag")), lightShader(std::make_shared<Shader>("light.vert", "light.frag")) {
 
 	float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
 	float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
@@ -26,33 +26,33 @@ EngineModeLayer::EngineModeLayer() : defaultShader(Shader("default.vert", "defau
 	Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
 	Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
 
-	RenderObject plane;
-	plane.material = std::make_shared<Material>(defaultShader);
-	plane.material->SetTexture(&textures[0]);
-	plane.material->SetTexture(&textures[1]);
-	plane.material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);
-	plane.material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
-	plane.mesh = std::make_shared<PlaneShape>(10.0f, 10.0f);
-	plane.modelMatrix = Matrix3x4();
-	plane.modelMatrix.Translate(Vector3(0.0f, 1.0f, 0.0f));
-	plane.modelMatrix.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
-	plane.modelMatrix.Scale(Vector3(1.f, 0.0f, 1.0f));
+	auto plane = std::make_shared<RenderObject>();
+	plane->material = std::make_shared<Material>(defaultShader);
+	plane->material->SetTexture(&textures[0]);
+	plane->material->SetTexture(&textures[1]);
+	plane->material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+	plane->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+	plane->mesh = std::make_shared<PlaneShape>(10.0f, 10.0f);
+	plane->modelMatrix = Matrix3x4();
+	plane->modelMatrix.Translate(Vector3(0.0f, 1.0f, 0.0f));
+	plane->modelMatrix.Rotate(Vector3(0.0f, Math::ToRadians(90.0f), 0.0f));
+	plane->modelMatrix.Scale(Vector3(1.f, 0.0f, 1.0f));
 
-	RenderObject lightSphere;
-	lightSphere.material = std::make_shared<Material>(lightShader);
-	lightSphere.mesh = std::make_shared<SphereShape>(1.0f, 18, 9);
-	lightSphere.modelMatrix = Matrix3x4();
-	lightSphere.modelMatrix.Translate(lightPos);
-	lightSphere.material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+	auto lightSphere = std::make_shared<RenderObject>();
+	lightSphere->material = std::make_shared<Material>(lightShader);
+	lightSphere->mesh = std::make_shared<SphereShape>(1.0f, 18, 9);
+	lightSphere->modelMatrix = Matrix3x4();
+	lightSphere->modelMatrix.Translate(lightPos);
+	lightSphere->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
 
-	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), &plane);
-	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Light Sphere"), &lightSphere);
+	auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), plane);
+	auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Light Sphere"), lightSphere);
 
-	auto floorBody = std::make_shared<RigidBody>(&plane.modelMatrix, 0.0f, true);
+	auto floorBody = std::make_shared<RigidBody>(&plane->modelMatrix, 0.0f, true);
 	floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
 
-	auto sphereBody = std::make_shared<RigidBody>(&lightSphere.modelMatrix, 1.0f, false);
-	sphereBody->collider = std::make_unique<SphereCollider>(lightSphere.modelMatrix.origin, 1.0f);
+	auto sphereBody = std::make_shared<RigidBody>(&lightSphere->modelMatrix, 1.0f, false);
+	sphereBody->collider = std::make_unique<SphereCollider>(lightSphere->modelMatrix.origin, 1.0f);
 
 	// Enter Scene Tree
 	sceneRoot->EnterTree();
