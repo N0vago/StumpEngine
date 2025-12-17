@@ -18,6 +18,8 @@ RenderManager::~RenderManager()
 
 void RenderManager::Draw()
 {
+    if (!activeCamera)
+        return;
 
     glEnable(GL_DEPTH_TEST);
 

@@ -12,14 +12,15 @@ EngineModeLayer::EngineModeLayer() : defaultShader(std::make_shared<Shader>("def
 	float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
 	float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
 
-	camera = std::make_unique<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
+	editorCamera = std::make_shared<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
+	RenderManager::Get().SetActiveCamera(editorCamera);
 	inputManager = std::make_unique<InputManager>(InputManager());
 	sceneRoot = std::make_unique<SceneNode>(ObjectInfo(0, "Root"));
 
 	Texture textures[] =
 	{
-		Texture("planks.png", TextureType::Diffuse, 0),
-		Texture("planksSpec.png", TextureType::Specular, 1)
+		Texture("planks.png", TextureType::Diffuse, 1),
+		Texture("planksSpec.png", TextureType::Specular, 2)
 	};
 	std::vector<Texture> texs(textures, textures + sizeof(textures) / sizeof(Texture));
 
@@ -83,10 +84,10 @@ void EngineModeLayer::OnUpdate(float p_ts)
 	else {
 		glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-		camera->firstClick = true;
+		editorCamera->firstClick = true;
 	}
 	
-	camera->UpdateMatrix(90.0f, 0.1f, 100.0f);
+	editorCamera->UpdateMatrix(90.0f, 0.1f, 100.0f);
 }
 
 void EngineModeLayer::OnRender()
@@ -100,10 +101,10 @@ void EngineModeLayer::OnEvent(Core::Event& event)
 }
 void EngineModeLayer::CameraMove(float& r_deltaTime)
 {
-	Vector3& camPos = camera->Position;
-	Vector3& camOrientation = camera->Orientation;
-	Vector3& camUp = camera->Up;
-	float& camSpeed = camera->speed;
+	Vector3& camPos = editorCamera->Position;
+	Vector3& camOrientation = editorCamera->Orientation;
+	Vector3& camUp = editorCamera->Up;
+	float& camSpeed = editorCamera->speed;
 
 	if (inputManager->IsKeyPressed(GLFW_KEY_W))
 	{
@@ -135,7 +136,7 @@ void EngineModeLayer::CameraMove(float& r_deltaTime)
 	}
 	if (!inputManager->IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
 	{
-		camera->speed = 5.0f;
+		editorCamera->speed = 5.0f;
 	}
 }
 
@@ -150,24 +151,24 @@ void EngineModeLayer::CameraRotate(float& r_deltaTime) {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	if (camera->firstClick)
+	if (editorCamera->firstClick)
 	{
 
 		glfwSetCursorPos(window, (width / 2), (height / 2));
-		camera->firstClick = false;
+		editorCamera->firstClick = false;
 	}
 
-	float rotX = camera->sensitivity * (float)(inputManager->GetMousePosition().y - (height / 2)) / height * r_deltaTime;
-	float rotY = camera->sensitivity * (float)(inputManager->GetMousePosition().x - (width / 2)) / width * r_deltaTime;
+	float rotX = editorCamera->sensitivity * (float)(inputManager->GetMousePosition().y - (height / 2)) / height * r_deltaTime;
+	float rotY = editorCamera->sensitivity * (float)(inputManager->GetMousePosition().x - (width / 2)) / width * r_deltaTime;
 
-	Vector3 newOrientation = camera->Orientation.RotatedAroundAxis(camera->Orientation.Cross(camera->Up).Normalized(), -rotX);
+	Vector3 newOrientation = editorCamera->Orientation.RotatedAroundAxis(editorCamera->Orientation.Cross(editorCamera->Up).Normalized(), -rotX);
 
-	if (Math::Abs(newOrientation.AngleTo(camera->Up) - Math::ToRadiansf(90.0f)) <= Math::ToRadiansf(85.0f))
+	if (Math::Abs(newOrientation.AngleTo(editorCamera->Up) - Math::ToRadiansf(90.0f)) <= Math::ToRadiansf(85.0f))
 	{
-		camera->Orientation = newOrientation;
+		editorCamera->Orientation = newOrientation;
 	}
 
-	camera->Orientation.RotateAroundAxis(camera->Up, -rotY);
+	editorCamera->Orientation.RotateAroundAxis(editorCamera->Up, -rotY);
 
 	glfwSetCursorPos(window, (width / 2), (height / 2));
 }

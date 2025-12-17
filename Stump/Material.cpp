@@ -1,4 +1,5 @@
 #include "Material.h"
+#include <cstdint>
 void Material::SetTexture(Texture* p_texture)
 {
     textures[p_texture->type] = p_texture;
@@ -6,6 +7,29 @@ void Material::SetTexture(Texture* p_texture)
 void Material::Bind() const
 {
     shader->Activate();
+
+    if (textures.size() > 0) {
+        uint32_t diffuseIndex = 0;
+        uint32_t specularIndex = 0;
+
+        for (const auto& [type, texture] : textures)
+        {
+            std::string uniformName;
+
+            switch (type)
+            {
+            case TextureType::Diffuse:
+                uniformName = "diffuse" + std::to_string(diffuseIndex++);
+                break;
+            case TextureType::Specular:
+                uniformName = "specular" + std::to_string(specularIndex++);
+                break;
+            }
+
+            texture->Bind();
+            shader->SetInt(uniformName.c_str(), texture->unit);
+        }
+    }
 
     for (const auto& [name, uniform] : uniforms)
     {
@@ -29,7 +53,7 @@ void Material::Bind() const
         case UniformType::Float3:
             shader->SetFloat3(
                 name.c_str(),
-                std::get<std::array<float, 3>>(uniform.data).at(0), 
+                std::get<std::array<float, 3>>(uniform.data).at(0),
                 std::get<std::array<float, 3>>(uniform.data).at(1),
                 std::get<std::array<float, 3>>(uniform.data).at(2)
             );
@@ -38,8 +62,8 @@ void Material::Bind() const
             shader->SetFloat4(
                 name.c_str(), 
                 std::get<std::array<float, 4>>(uniform.data).at(0),
-                std::get<std::array<float, 4>>(uniform.data).at(1), 
-                std::get<std::array<float, 4>>(uniform.data).at(2), 
+                std::get<std::array<float, 4>>(uniform.data).at(1),
+                std::get<std::array<float, 4>>(uniform.data).at(2),
                 std::get<std::array<float, 4>>(uniform.data).at(3)
             );
             break;
@@ -59,27 +83,7 @@ void Material::Bind() const
             break;
         }
 
-        uint32_t diffuseIndex = 0;
-        uint32_t specularIndex = 0;
-
-        for (const auto& [type, texture] : textures)
-        {
-            std::string uniformName;
-
-            switch (type)
-            {
-            case TextureType::Diffuse:
-                uniformName = "diffuse" + std::to_string(diffuseIndex++);
-                break;
-            case TextureType::Specular:
-                uniformName = "specular" + std::to_string(specularIndex++);
-                break;
-            }
-
-            texture->Bind();
-
-            shader->SetInt(uniformName.c_str(), texture->unit);
-        }
+        
     }
 }
 void Material::SetFloat(const std::string& r_name, float p_value)

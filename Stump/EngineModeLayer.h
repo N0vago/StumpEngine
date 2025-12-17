@@ -10,7 +10,7 @@
 class SceneNode;
 class EngineModeLayer : public Core::Layer
 {
-	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Camera> editorCamera;
 	std::unique_ptr<InputManager> inputManager;
 
 	std::unique_ptr<SceneNode> sceneRoot;

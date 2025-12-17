@@ -9,8 +9,6 @@ class MeshInstance : public SceneNode
 public:
 	std::shared_ptr<RenderObject> renderObject;
 
-	MeshInstance(const ObjectInfo& r_objectInfo);
-
 	MeshInstance(const ObjectInfo& r_objectInfo, std::shared_ptr<RenderObject> p_renderObject);
 
 	virtual void OnAwake() override;
