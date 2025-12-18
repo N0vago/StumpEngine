@@ -8,6 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ---------------- OpenGL ----------------
 find_package(OpenGL REQUIRED)
 
+# ---------------- OpenAL ----------------
+find_package(OpenAL CONFIG REQUIRED)
+
+# ----------------- sndlib ----------------------
+
+find_package(SndFile CONFIG REQUIRED)
 # ---------------- Paths ----------------
 set(STUMP_LIB_DIR     ${CMAKE_SOURCE_DIR}/Libraries)
 set(STUMP_INCLUDE_DIR ${STUMP_LIB_DIR}/include)
@@ -49,6 +55,8 @@ target_link_libraries(Stump PRIVATE
     Engine
     glfw
     OpenGL::GL
+    OpenAL::OpenAL
+    SndFile::sndfile
     glad
     stb
 )
@@ -64,3 +72,6 @@ add_custom_target(CopyAssets ALL
 )
 
 add_dependencies(Stump CopyAssets)
+
+
+

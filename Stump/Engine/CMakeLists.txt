@@ -48,8 +48,12 @@ target_sources(Engine PRIVATE
 
     # ---------------- Utility ----------------
     Utility/ModelData.cpp
-)
 
+    # ---------------- Audio ------------------
+    Audio/AudioDevice.cpp
+    Audio/AudioBuffer.cpp
+    Audio/AudioSource.cpp
+)
 target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 	${STUMP_INCLUDE_DIR}
@@ -57,6 +61,7 @@ target_include_directories(Engine PUBLIC
 target_link_libraries(Engine PUBLIC
     glfw
     OpenGL::GL
+    OpenAL::OpenAL
     glad
 )
 target_compile_definitions(Engine PUBLIC STUMP_ENGINE)
