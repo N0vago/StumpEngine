@@ -1,0 +1,249 @@
+#include "Collider.h"
+#include <assert.h>
+#include <algorithm>
+namespace Physic {
+	CollisionPoints CollisionDetector::TestCollision(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		static const FindContactFunc collisionTesters[3][3] = {
+			{ &CollisionDetector::TestSphereSphere, &CollisionDetector::TestSphereBox, &CollisionDetector::TestSpherePlane },
+			{ nullptr, &CollisionDetector::TestBoxBox, &CollisionDetector::TestBoxPlane },
+			{ nullptr, nullptr, &CollisionDetector::TestPlanePlane }
+		};
+		bool swap = p_collider1->GetColliderType() > p_collider2->GetColliderType();
+
+		if (swap)
+		{
+
+			std::swap(p_collider1, p_collider2);
+		}
+		CollisionPoints points = collisionTesters[p_collider1->GetColliderType()][p_collider2->GetColliderType()](p_collider1, p_collider2);
+
+		if (swap)
+		{
+			SWAP(points.pointA, points.pointB);
+			points.normal = -points.normal;
+		}
+
+		return points;
+	}
+
+	CollisionPoints CollisionDetector::TestSphereSphere(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_SPHERE);
+		auto s1 = static_cast<const SphereCollider*>(p_collider1);
+		auto s2 = static_cast<const SphereCollider*>(p_collider2);
+
+		Vector3 delta = s2->center - s1->center;
+		float distSq = delta.LengthSquared();
+		float r = s1->radius + s2->radius;
+
+		if (distSq > r * r)
+			return {};
+
+		float dist = MathF::Sqrt(distSq);
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+
+		cp.normal = (dist > 0.0f) ? delta / dist : Vector3(1, 0, 0);
+		cp.penetrationDepth = r - dist;
+
+		cp.pointA = s1->center + cp.normal * s1->radius;
+		cp.pointB = s2->center - cp.normal * s2->radius;
+
+		return cp;
+	}
+
+	CollisionPoints CollisionDetector::TestSpherePlane(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_PLANE);
+		auto sphere = static_cast<const SphereCollider*>(p_collider1);
+		auto plane = static_cast<const PlaneCollider*>(p_collider2);
+
+		float distance =
+			plane->normal.Dot(sphere->center) + plane->distance;
+
+		if (distance > sphere->radius)
+			return {};
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+
+		cp.normal = -plane->normal;
+		cp.penetrationDepth = sphere->radius - distance;
+
+		cp.pointA = sphere->center - plane->normal * distance;
+		cp.pointB = cp.pointA - plane->normal * cp.penetrationDepth;
+
+		return cp;
+	}
+
+	CollisionPoints CollisionDetector::TestSphereBox(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_BOX);
+		auto sphere = static_cast<const SphereCollider*>(p_collider1);
+		auto box = static_cast<const BoxCollider*>(p_collider2);
+
+		Vector3 local = box->orientation.Transposed() * (sphere->center - box->center);
+
+		Vector3 closest = local;
+		closest.x = MathF::Clamp(closest.x, -box->halfExtents.x, box->halfExtents.x);
+		closest.y = MathF::Clamp(closest.y, -box->halfExtents.y, box->halfExtents.y);
+		closest.z = MathF::Clamp(closest.z, -box->halfExtents.z, box->halfExtents.z);
+
+		Vector3 delta = local - closest;
+		float distSq = delta.LengthSquared();
+
+		if (distSq > sphere->radius * sphere->radius)
+			return {};
+
+		Vector3 worldPoint = box->orientation.operator*(closest) +box->center;
+		Vector3 normal = (sphere->center - worldPoint).Normalized();
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+		cp.normal = normal;
+		cp.penetrationDepth = sphere->radius - std::sqrt(distSq);
+		cp.pointA = sphere->center - normal * sphere->radius;
+		cp.pointB = worldPoint;
+
+		return cp;
+	}
+
+	CollisionPoints CollisionDetector::TestBoxBox(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_BOX || p_collider2->GetColliderType() == COLLIDER_BOX);
+		auto box1 = static_cast<const BoxCollider*>(p_collider1);
+		auto box2 = static_cast<const BoxCollider*>(p_collider2);
+
+		Vector3 T = box2->center - box1->center;
+
+		float minPenetration = FLT_MAX;
+		Vector3 bestAxis;
+
+		auto TestAxis = [&](const Vector3& axis)
+			{
+				if (axis.LengthSquared() < 1e-6f)
+					return true;
+
+				float aProj =
+					MathF::Abs(axis.Dot(box1->orientation.GetColumn(0))) * box1->halfExtents.x +
+					MathF::Abs(axis.Dot(box1->orientation.GetColumn(1))) * box1->halfExtents.y +
+					MathF::Abs(axis.Dot(box1->orientation.GetColumn(2))) * box1->halfExtents.z;
+
+				float bProj =
+					MathF::Abs(axis.Dot(box2->orientation.GetColumn(0))) * box2->halfExtents.x +
+					MathF::Abs(axis.Dot(box2->orientation.GetColumn(1))) * box2->halfExtents.y +
+					MathF::Abs(axis.Dot(box2->orientation.GetColumn(2))) * box2->halfExtents.z;
+
+				float dist = MathF::Abs(T.Dot(axis));
+
+				float overlap = aProj + bProj - dist;
+				if (overlap < 0)
+					return false;
+
+				if (overlap < minPenetration)
+				{
+					minPenetration = overlap;
+					bestAxis = axis;
+				}
+
+				return true;
+			};
+
+		for (int i = 0; i < 3; ++i)
+		{
+			if (!TestAxis(box1->orientation.GetColumn(i))) return {};
+			if (!TestAxis(box2->orientation.GetColumn(i))) return {};
+		}
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+		cp.normal = bestAxis.Normalized();
+		cp.penetrationDepth = minPenetration;
+		cp.pointA = box1->center;
+		cp.pointB = box2->center;
+
+		return cp;
+	}
+
+	CollisionPoints CollisionDetector::TestBoxPlane(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_SPHERE || p_collider2->GetColliderType() == COLLIDER_BOX);
+		auto box = static_cast<const BoxCollider*>(p_collider1);
+		auto plane = static_cast<const PlaneCollider*>(p_collider2);
+		float r =
+			MathF::Abs(plane->normal.Dot(box->orientation.GetColumn(0))) * box->halfExtents.x +
+			MathF::Abs(plane->normal.Dot(box->orientation.GetColumn(1))) * box->halfExtents.y +
+			MathF::Abs(plane->normal.Dot(box->orientation.GetColumn(2))) * box->halfExtents.z;
+
+		float d = plane->normal.Dot(box->center) + plane->distance;
+
+		if (MathF::Abs(d) > r)
+			return {};
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+		cp.normal = plane->normal;
+		cp.penetrationDepth = r - MathF::Abs(d);
+		cp.pointA = box->center - plane->normal * d;
+		cp.pointB = cp.pointA - plane->normal * cp.penetrationDepth;
+
+		return cp;
+	}
+
+	CollisionPoints CollisionDetector::TestPlanePlane(const Collider* p_collider1, const Collider* p_collider2)
+	{
+		assert(p_collider1->GetColliderType() == COLLIDER_PLANE || p_collider2->GetColliderType() == COLLIDER_PLANE);
+		const PlaneCollider* p1 = static_cast<const PlaneCollider*>(p_collider1);
+		const PlaneCollider* p2 = static_cast<const PlaneCollider*>(p_collider2);
+
+		if (MathF::Abs(p1->normal.Dot(p2->normal)) < 0.999f)
+			return {};
+
+		float d = MathF::Abs(p1->distance - p2->distance);
+		if (d > 0.001f)
+			return {};
+
+		CollisionPoints cp;
+		cp.hasCollision = true;
+		cp.normal = p1->normal;
+		cp.penetrationDepth = 0.0f;
+
+		return cp;
+	}
+	AABB SphereCollider::GetAABB() const
+	{
+		return AABB(center - Vector3(radius, radius, radius), center + Vector3(radius, radius, radius));
+	}
+	AABB BoxCollider::GetAABB() const
+	{
+		Vector3 corners[8];
+		corners[0] = center + orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+		corners[1] = center + orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+		corners[2] = center + orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+		corners[3] = center + orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+		corners[4] = center - orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+		corners[5] = center - orientation.GetColumn(0) * halfExtents.x + orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+		corners[6] = center - orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y + orientation.GetColumn(2) * halfExtents.z;
+		corners[7] = center - orientation.GetColumn(0) * halfExtents.x - orientation.GetColumn(1) * halfExtents.y - orientation.GetColumn(2) * halfExtents.z;
+		Vector3 min = corners[0];
+		Vector3 max = corners[0];
+		for (int i = 1; i < 8; ++i)
+		{
+			min.x = std::min(min.x, corners[i].x);
+			min.y = std::min(min.y, corners[i].y);
+			min.z = std::min(min.z, corners[i].z);
+			max.x = std::max(max.x, corners[i].x);
+			max.y = std::max(max.y, corners[i].y);
+			max.z = std::max(max.z, corners[i].z);
+		}
+		return AABB(min, max);
+	}
+
+	AABB PlaneCollider::GetAABB() const
+	{
+		return AABB(Vector3(-INFINITY, -INFINITY, -INFINITY), Vector3(INFINITY, INFINITY, INFINITY));
+	}
+
+}
