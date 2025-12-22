@@ -10,7 +10,6 @@ namespace Scene {
 	STScene::~STScene()
 	{
 		root->ExitTree();
-		flatNodes.clear();
 	}
 
 	void STScene::Update(float p_deltaTime)
@@ -31,11 +30,6 @@ namespace Scene {
 
 		p_node->ExitTree();
 
-		flatNodes.erase(
-			std::remove(flatNodes.begin(), flatNodes.end(), p_node),
-			flatNodes.end()
-		);
-
 		p_node->GetParent()->RemoveChild(p_node);
 	}
 
@@ -48,7 +42,7 @@ namespace Scene {
 		if (!oldParent)
 			return;
 
-		std::unique_ptr<SceneNode> owned = oldParent->ExtractChild(p_child);
+		std::shared_ptr<SceneNode> owned = oldParent->ExtractChild(p_child);
 		p_newParent->AddChild(std::move(owned));
 	}
 

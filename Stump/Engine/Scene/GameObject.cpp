@@ -17,7 +17,7 @@ namespace Scene {
 		auto it = std::find_if(
 			components.begin(),
 			components.end(),
-			[p_component](const std::unique_ptr<Components::Component>& c)
+			[p_component](const std::shared_ptr<Components::Component>& c)
 			{
 				return c.get() == p_component;
 			});

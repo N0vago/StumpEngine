@@ -13,7 +13,25 @@ namespace Components {
         bool isStatic = false;
         bool affectedByGravity = true;
         float mass = 1.0f;
+        RigidBodyComponent()
+        {
+            info = ComponentInfo{
+                "RigidBody",
+                "Physics",
+                false,
+                true
+            };
+        }
 
+        ComponentInfo GetInfo() const override
+        {
+            return {
+                "RigidBody",
+                "Physics",
+                false,
+                true
+            };
+        }
 
         void OnCreate() override;
         void OnEnable() override;

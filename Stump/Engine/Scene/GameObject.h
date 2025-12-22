@@ -19,14 +19,14 @@ namespace Scene {
         template<std::derived_from<Components::Component> T, typename... Args>
         T* AddComponent(Args&&... r_args)
         {
-            auto comp = std::make_unique<T>(std::forward<Args>(r_args)...);
+            auto comp = std::make_shared<T>(std::forward<Args>(r_args)...);
             T* raw = comp.get();
 
             raw->owner = this;
 
-            raw->OnCreate();
+            components.push_back(std::move(comp));
 
-            components.emplace_back(std::move(comp));
+            raw->OnCreate();
 
             return raw;
         }
@@ -61,7 +61,7 @@ namespace Scene {
         void Update(float p_deltaTime) override;
 
     private:
-        std::vector<std::unique_ptr<Components::Component>> components;
+        std::vector<std::shared_ptr<Components::Component>> components;
 	};
     
 }

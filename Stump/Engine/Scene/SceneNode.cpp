@@ -22,7 +22,7 @@ namespace Scene {
 		owner->ReparentNode(this, p_parent);
 	}
 
-	void SceneNode::AddChild(std::unique_ptr<SceneNode> p_child)
+	void SceneNode::AddChild(std::shared_ptr<SceneNode> p_child)
 	{
 		if (!p_child)
 			return;
@@ -38,7 +38,7 @@ namespace Scene {
 	{
 
 		auto it = std::find_if(children.begin(), children.end(),
-			[&](const std::unique_ptr<SceneNode>& c) {
+			[&](const std::shared_ptr<SceneNode>& c) {
 				return c.get() == p_child;
 			});
 
@@ -52,9 +52,9 @@ namespace Scene {
 
 		children.erase(it);
 	}
-	std::unique_ptr<SceneNode> SceneNode::ExtractChild(SceneNode* child) {
+	std::shared_ptr<SceneNode> SceneNode::ExtractChild(SceneNode* child) {
 		auto it = std::find_if(children.begin(), children.end(),
-			[child](const std::unique_ptr<SceneNode>& c)
+			[child](const std::shared_ptr<SceneNode>& c)
 			{
 				return c.get() == child;
 			});
@@ -67,7 +67,7 @@ namespace Scene {
 
 		(*it)->parent = nullptr;
 
-		std::unique_ptr<SceneNode> result = std::move(*it);
+		std::shared_ptr<SceneNode> result = std::move(*it);
 		children.erase(it);
 
 		return result;

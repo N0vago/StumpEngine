@@ -14,7 +14,7 @@ namespace Scene {
 	protected:
 		STScene* owner;
 		SceneNode* parent;
-		std::vector<std::unique_ptr<SceneNode>> children;
+		std::vector<std::shared_ptr<SceneNode>> children;
 	public:
 
 		Math::Matrix3x4 transform;
@@ -25,10 +25,10 @@ namespace Scene {
 		void SetParent(SceneNode* p_parent);
 		SceneNode* GetParent() { return parent; }
 
-		void AddChild(std::unique_ptr<SceneNode> p_child);
+		void AddChild(std::shared_ptr<SceneNode> p_child);
 		void RemoveChild(SceneNode* p_child);
 
-		std::unique_ptr<SceneNode> ExtractChild(SceneNode* child);
+		std::shared_ptr<SceneNode> ExtractChild(SceneNode* child);
 
 		void EnterTree();
 		void ExitTree();
