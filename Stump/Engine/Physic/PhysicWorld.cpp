@@ -49,6 +49,7 @@ namespace Physic {
 
 		for (auto& body : rigidBodies) {
 
+			if (!body->collider) continue;
 			if (!body->isStatic) {
 				if (body->affectedByGravity)
 					body->ApplyForce(gravity * body->mass);

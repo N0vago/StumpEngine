@@ -7,21 +7,21 @@
 namespace Audio {
 
 	static AudioBuffer* Instance = nullptr;
-	static SoundID counter = 0;
 	AudioBuffer::AudioBuffer() {
 		Instance = this;
 		soundBuffers.clear();
 	}
 	AudioBuffer::~AudioBuffer()
 	{
-		for (auto& [id, buffer] : soundBuffers)
+		Instance = nullptr;
+		for (auto& buffer : soundBuffers)
 		{
 			alDeleteBuffers(1, &buffer);
 		}
 
 		soundBuffers.clear();
 	}
-	SoundID AudioBuffer::AddSoundEffect(const char* p_filename)
+	uint32_t AudioBuffer::AddSoundEffect(const char* p_filename)
 	{
 		ALenum err, format;
 		ALuint buffer;
@@ -30,8 +30,6 @@ namespace Audio {
 		short* membuf;
 		sf_count_t num_frames;
 		ALsizei num_bytes;
-		
-		counter++;
 
 		sndfile = sf_open(p_filename, SFM_READ, &sfinfo);
 		if (!sndfile)
@@ -82,7 +80,9 @@ namespace Audio {
 
 		buffer = 0;
 		alGenBuffers(1, &buffer);
+
 		alBufferData(buffer, format, membuf, num_bytes, sfinfo.samplerate);
+		
 
 		free(membuf);
 		sf_close(sndfile);
@@ -97,26 +97,28 @@ namespace Audio {
 		}
 
 		
-		soundBuffers[counter] = buffer;
+		soundBuffers.push_back(buffer);
 
-		return counter;
+		return buffer;
 	}
-	bool AudioBuffer::RemoveSoundEffect(const SoundID& r_id)
+	bool AudioBuffer::RemoveSoundEffect(const uint32_t& r_buffer)
 	{
-		auto it = soundBuffers.find(r_id);
-		if (it == soundBuffers.end())
-			return false;
+		auto it = soundBuffers.begin();
+		while (it != soundBuffers.end())
+		{
+			if (*it == r_buffer)
+			{
+				alDeleteBuffers(1, &*it);
 
-		ALuint buffer = it->second;
-		alDeleteBuffers(1, &buffer);
+				it = soundBuffers.erase(it);
 
-		soundBuffers.erase(it);
-		return true;
-	}
-	uint32_t AudioBuffer::GetSoundBuffer(const SoundID& r_soundID)
-	{
-		auto it = soundBuffers.find(r_soundID);
-		return it != soundBuffers.end() ? it->second : 0;
+				return true;
+			}
+			else {
+				++it;
+			}
+		}
+		return false;  // couldn't find to remove
 	}
 	AudioBuffer* AudioBuffer::Get()
 	{

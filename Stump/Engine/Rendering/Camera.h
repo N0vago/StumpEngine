@@ -3,9 +3,6 @@
 
 #include "Math/Matrix4x4.h"
 #include "Rendering/Shader.h"
-
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
 using namespace Math;
 namespace Rendering {
 	class Camera

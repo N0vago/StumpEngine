@@ -6,8 +6,8 @@
 #include "Core/InputManager.h"
 #include "Rendering/RenderManager.h"
 #include "Physic/PhysicWorld.h"
-#include "Scene/SceneNode.h"
-
+#include "Scene/Scene.h"
+#include "Audio/AudioSource.h"
 using namespace Core;
 using namespace Rendering;
 using namespace Physic;
@@ -16,11 +16,10 @@ using namespace Scene;
 namespace Core {
 	class EngineModeLayer : public Core::Layer
 	{
-		std::shared_ptr<Camera> editorCamera;
 		std::unique_ptr<InputManager> inputManager;
+		std::unique_ptr<STScene> scene;
 
-		std::unique_ptr<SceneNode> sceneRoot;
-
+		std::shared_ptr<Camera> editorCamera;
 		std::shared_ptr<Shader> defaultShader;
 		std::shared_ptr<Shader> lightShader;
 	public:

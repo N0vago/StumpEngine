@@ -23,10 +23,12 @@ namespace Audio {
 			name = alcGetString(device, ALC_ALL_DEVICES_SPECIFIER);
 		if (!name || alcGetError(device) != AL_NO_ERROR)
 			name = alcGetString(device, ALC_DEVICE_SPECIFIER);
+		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 		printf("Opened \"%s\"\n", name);
 	}
 	AudioDevice::~AudioDevice()
 	{
+		Instance = nullptr;
 		if (!alcMakeContextCurrent(nullptr))
 			throw("failed to set context to nullptr");
 
@@ -36,6 +38,7 @@ namespace Audio {
 
 		if (!alcCloseDevice(device))
 			throw("failed to close sound device");
+		std::cout << "Audio Device destructor" << std::endl;
 	}
 	AudioDevice* AudioDevice::Get()
 	{

@@ -42,9 +42,11 @@ target_sources(Engine PRIVATE
     Rendering/Texture.cpp
 
     # ---------------- Scene ----------------
+    Scene/Scene.cpp
+
     Scene/Object.cpp
     Scene/SceneNode.cpp
-    Scene/MeshInstance.cpp
+    Scene/GameObject.cpp
 
     # ---------------- Utility ----------------
     Utility/ModelData.cpp
@@ -53,7 +55,14 @@ target_sources(Engine PRIVATE
     Audio/AudioDevice.cpp
     Audio/AudioBuffer.cpp
     Audio/AudioSource.cpp
-)
+    Audio/AudioListener.cpp
+    # ---------------- Components -------------
+    Components/RigidBodyComponent.cpp
+    Components/ColliderComponent.cpp
+    Components/CameraComponent.cpp
+    Components/MeshRendererComponent.cpp
+    Components/AudioSourceComponent.cpp
+    )
 target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 	${STUMP_INCLUDE_DIR}

@@ -5,10 +5,11 @@ namespace Audio {
 	class AudioDevice {
 		ALCdevice* device;
 		ALCcontext* context;
+	public:
 
 		AudioDevice();
 		~AudioDevice();
-	public:
+
 		static AudioDevice* Get();
 	};
 

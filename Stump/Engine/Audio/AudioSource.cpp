@@ -12,12 +12,19 @@ namespace Audio {
     {
 
         alGenSources(1, &source);
-
+        if (source == 0)
+        {
+            std::cerr << "[Audio] Failed to generate OpenAL source\n";
+        }
         alSourcef(source, AL_PITCH, pitch);
         alSourcef(source, AL_GAIN, gain);
         alSource3f(source, AL_POSITION, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
-        alSource3f(source, AL_VELOCITY, (ALfloat)position.x, (ALfloat)position.y, (ALfloat)position.z);
+        alSource3f(source, AL_VELOCITY, (ALfloat)velocity.x, (ALfloat)velocity.y, (ALfloat)velocity.z);
         alSourcei(source, AL_LOOPING, loopSound);
+        alSourcei(source, AL_SOURCE_RELATIVE, AL_FALSE);
+        alSourcef(source, AL_REFERENCE_DISTANCE, 1.0f);
+        alSourcef(source, AL_MAX_DISTANCE, 50.0f);
+        alSourcef(source, AL_ROLLOFF_FACTOR, 1.0f);
     }
 
     AudioSource::~AudioSource()
@@ -25,17 +32,10 @@ namespace Audio {
         alDeleteSources(1, &source);
     }
 
-    void AudioSource::Play(const SoundID p_sound)
+    void AudioSource::Play()
     {
-        if (!AudioDevice::Get())
-            return;
-        ALuint buffer = AudioBuffer::Get()->GetSoundBuffer(p_sound);
-        if (!buffer)
-            return;
-
-        if (buffer != buffer)
+        if (buffer > 0)
         {
-            buffer = buffer;
             alSourcei(source, AL_BUFFER, buffer);
         }
 
@@ -83,5 +83,8 @@ namespace Audio {
     {
         loopSound = p_isLooping;
         alSourcei(source, AL_LOOPING, loopSound);
+    }
+    void AudioSource::SetSound(const char* p_fileName) {
+        buffer = AudioBuffer::Get()->AddSoundEffect(p_fileName);
     }
 }

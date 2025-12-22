@@ -1,22 +1,20 @@
 #ifndef ST_AUDIO_BUFFER_H
 #define ST_AUDIO_BUFFER_H
 #include <AL\al.h>
-#include <unordered_map>
+#include <vector>
 namespace Audio {
-	using SoundID = uint32_t;
-
 	class AudioBuffer {
-		std::unordered_map<SoundID, uint32_t> soundBuffers;
+		std::vector<uint32_t> soundBuffers;
 
+	public:
 		AudioBuffer();
 		~AudioBuffer();
-	public:
+
+		uint32_t AddSoundEffect(const char* p_filename);
+		bool RemoveSoundEffect(const uint32_t& r_buffer);
+
 		static AudioBuffer* Get();
 
-		SoundID AddSoundEffect(const char* p_filename);
-		bool RemoveSoundEffect(const SoundID& r_buffer);
-
-		uint32_t GetSoundBuffer(const SoundID& r_soundID);
 	};
 }
 #endif //ST_AUDIO_BUFFER_H

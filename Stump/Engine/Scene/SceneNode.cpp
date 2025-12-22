@@ -1,8 +1,9 @@
 #include "Scene/SceneNode.h"
+#include "Scene/Scene.h"
 #include <iostream>
 #include <algorithm>
 namespace Scene {
-	SceneNode::SceneNode(const ObjectInfo& p_info) : Object(p_info)
+	SceneNode::SceneNode(const ObjectInfo& r_info, STScene* p_owner) : Object(r_info), owner(p_owner)
 	{
 		parent = nullptr;
 	}
@@ -15,13 +16,10 @@ namespace Scene {
 
 	void SceneNode::SetParent(SceneNode* p_parent)
 	{
-		/*if(parent == p_parent)
+		if (!owner || parent == p_parent)
 			return;
-		if(parent)
-			parent->RemoveChild(this);
-		if(p_parent)
-			p_parent->AddChild(std::move(std::make_unique<SceneNode>(this)));*/
-		parent = p_parent;
+
+		owner->ReparentNode(this, p_parent);
 	}
 
 	void SceneNode::AddChild(std::unique_ptr<SceneNode> p_child)
@@ -31,13 +29,14 @@ namespace Scene {
 
 		p_child->parent = this;
 
-		if (!p_child->isInTree)
+		if (!p_child->isInTree && isInTree)
 			p_child->EnterTree();
 		children.push_back(std::move(p_child));
 	}
 
 	void SceneNode::RemoveChild(SceneNode* p_child)
 	{
+
 		auto it = std::find_if(children.begin(), children.end(),
 			[&](const std::unique_ptr<SceneNode>& c) {
 				return c.get() == p_child;
@@ -53,13 +52,31 @@ namespace Scene {
 
 		children.erase(it);
 	}
+	std::unique_ptr<SceneNode> SceneNode::ExtractChild(SceneNode* child) {
+		auto it = std::find_if(children.begin(), children.end(),
+			[child](const std::unique_ptr<SceneNode>& c)
+			{
+				return c.get() == child;
+			});
+
+		if (it == children.end())
+			return nullptr;
+
+		if ((*it)->isInTree)
+			(*it)->ExitTree();
+
+		(*it)->parent = nullptr;
+
+		std::unique_ptr<SceneNode> result = std::move(*it);
+		children.erase(it);
+
+		return result;
+	}
 
 	void SceneNode::EnterTree()
 	{
 		if (isInTree)
 			return;
-
-		OnAwake();
 
 		isInTree = true;
 
@@ -74,8 +91,6 @@ namespace Scene {
 		if (!isInTree)
 			return;
 
-		OnSleep();
-
 		isInTree = false;
 		for (auto& child : children)
 		{
@@ -83,14 +98,20 @@ namespace Scene {
 		}
 	}
 
-	void SceneNode::OnAwake()
+	void SceneNode::OnEnable()
 	{
-		std::cout << "SceneNode " << info.name << " awakened." << std::endl;
+		for (auto& child : children)
+		{
+			child->OnEnable();
+		}
 	}
 
-	void SceneNode::OnSleep()
+	void SceneNode::OnDisable()
 	{
-		std::cout << "SceneNode " << info.name << " slept." << std::endl;
+		for (auto& child : children)
+		{
+			child->OnDisable();
+		}
 	}
 
 	void SceneNode::Update(float p_deltaTime)

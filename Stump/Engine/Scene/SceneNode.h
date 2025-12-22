@@ -6,29 +6,36 @@
 #include <memory>
 #include <vector>
 
+
 namespace Scene {
+	class STScene;
 	class SceneNode : public Object
 	{
+	protected:
+		STScene* owner;
 		SceneNode* parent;
 		std::vector<std::unique_ptr<SceneNode>> children;
 	public:
 
 		Math::Matrix3x4 transform;
 
-		SceneNode(const ObjectInfo& p_info);
-		~SceneNode();
+		SceneNode(const ObjectInfo& r_info, STScene* p_owner);
+		virtual ~SceneNode();
 
 		void SetParent(SceneNode* p_parent);
+		SceneNode* GetParent() { return parent; }
 
 		void AddChild(std::unique_ptr<SceneNode> p_child);
 		void RemoveChild(SceneNode* p_child);
 
+		std::unique_ptr<SceneNode> ExtractChild(SceneNode* child);
+
 		void EnterTree();
 		void ExitTree();
 
-		virtual void OnAwake();
+		virtual void OnEnable();
 
-		virtual void OnSleep();
+		virtual void OnDisable();
 
 		virtual void Update(float p_deltaTime);
 

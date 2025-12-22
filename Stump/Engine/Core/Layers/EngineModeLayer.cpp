@@ -1,22 +1,32 @@
 #include "Core/Layers/EngineModeLayer.h"
 
-#include "Scene/MeshInstance.h"
+#include "Scene/Scene.h"
+#include "Scene/GameObject.h"
+#include "Components/MeshRendererComponent.h"
+#include "Components/RigidBodyComponent.h"
+#include "Components/ColliderComponent.h"
 #include "Rendering/Shapes/PlaneShape.h"
 #include "Rendering/Shapes/SphereShape.h"
 #include "Rendering/Shapes/CubeShape.h"
+#include "Audio/AudioListener.h"
+
 #include <memory>
 #include <algorithm>
 
 namespace Core {
-	EngineModeLayer::EngineModeLayer() : defaultShader(std::make_shared<Shader>("Resources/default.vert", "Resources/default.frag")), lightShader(std::make_shared<Shader>("Resources/light.vert", "Resources/light.frag")) {
 
+	
+	EngineModeLayer::EngineModeLayer() : 
+		defaultShader(std::make_shared<Shader>("Resources/default.vert", "Resources/default.frag")),
+		lightShader(std::make_shared<Shader>("Resources/light.vert", "Resources/light.frag"))
+	{
 		float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
 		float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
 
 		editorCamera = std::make_shared<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
 		RenderManager::Get().SetActiveCamera(editorCamera);
 		inputManager = std::make_unique<InputManager>(InputManager());
-		sceneRoot = std::make_unique<SceneNode>(ObjectInfo(0, "Root"));
+		scene = std::make_unique<STScene>();
 
 		auto diffuseTexture = std::make_shared<Texture>("Resources/planks.png", TextureType::Diffuse, 0);
 		auto specularTexture = std::make_shared<Texture>("Resources/planksSpec.png", TextureType::Specular, 1);
@@ -24,7 +34,7 @@ namespace Core {
 		Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
 		Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
 
-		auto plane = std::make_shared<RenderObject>();
+		auto plane = std::make_shared<RenderUnit>();
 		plane->material = std::make_shared<Material>(defaultShader);
 		plane->material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 		plane->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
@@ -36,30 +46,34 @@ namespace Core {
 		plane->modelMatrix.Rotate(Vector3(0.0f, MathF::ToRadians(90.0f), 0.0f));
 		plane->modelMatrix.Scale(Vector3(1.f, 0.0f, 1.0f));
 
-		auto lightSphere = std::make_shared<RenderObject>();
+		auto lightSphere = std::make_shared<RenderUnit>();
 		lightSphere->material = std::make_shared<Material>(lightShader);
 		lightSphere->mesh = std::make_shared<SphereShape>(1.0f, 18, 9);
 		lightSphere->modelMatrix = Matrix3x4();
 		lightSphere->modelMatrix.Translate(lightPos);
 		lightSphere->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
 
-		auto planeInstance = std::make_unique<MeshInstance>(ObjectInfo(1, "Floor"), plane);
-		auto lightSphereInstance = std::make_unique<MeshInstance>(ObjectInfo(2, "Light Sphere"), lightSphere);
+		auto planeInstance = scene->CreateNode<GameObject>("Plane");
+		auto lightSphereInstance = scene->CreateNode<GameObject>("Light Sphere");
 
-		auto floorBody = std::make_shared<RigidBody>(&plane->modelMatrix, 0.0f, true);
-		floorBody->collider = std::make_unique<PlaneCollider>(Vector3(0.0f, 1.0f, 0.0f), 0.0f);
+		auto planeMesh = planeInstance->AddComponent<Components::MeshRendererComponent>();
+		planeMesh->SetMesh(plane->mesh);
+		planeMesh->SetMaterial(plane->material);
 
-		auto sphereBody = std::make_shared<RigidBody>(&lightSphere->modelMatrix, 1.0f, false);
-		sphereBody->collider = std::make_unique<SphereCollider>(lightSphere->modelMatrix.origin, 1.0f);
+		auto lightSphereMesh = lightSphereInstance->AddComponent<Components::MeshRendererComponent>();
+		lightSphereMesh->SetMesh(lightSphere->mesh);
+		lightSphereMesh->SetMaterial(lightSphere->material);
 
-		// Enter Scene Tree
-		sceneRoot->EnterTree();
-		sceneRoot->AddChild(std::move(planeInstance));
-		sceneRoot->AddChild(std::move(lightSphereInstance));
+		auto boxCollider = planeInstance->AddComponent<Components::BoxColliderComponent>();
+		boxCollider->halfExtents = Vector3(10.0f, 0.1f, 10.0f);
 
-		// Add Rigid Bodies to Physic World
-		PhysicWorld::Get().AddRigidBody(floorBody);
-		PhysicWorld::Get().AddRigidBody(sphereBody);
+		auto sphereCollider = lightSphereInstance->AddComponent<Components::SphereColliderComponent>();
+		sphereCollider->radius = 1.0f;
+
+		auto planeRigidBody = planeInstance->AddComponent<Components::RigidBodyComponent>();
+		auto lightSphereRigidBody = lightSphereInstance->AddComponent<Components::RigidBodyComponent>();
+		
+		scene->EnableNodes();
 	}
 
 	EngineModeLayer::~EngineModeLayer()
@@ -70,9 +84,10 @@ namespace Core {
 	{
 		PhysicWorld::Get().StepSimulation(p_ts);
 
-		sceneRoot->Update(p_ts);
+		scene->Update(p_ts);
 
 		CameraMove(p_ts);
+
 
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
@@ -85,6 +100,11 @@ namespace Core {
 		}
 
 		editorCamera->UpdateMatrix(90.0f, 0.1f, 100.0f);
+
+		Audio::AudioListener* listener = Audio::AudioListener::Get();
+		listener->SetPosition(editorCamera->Position);
+		listener->SetOrientation(editorCamera->Orientation, editorCamera->Up);
+
 	}
 
 	void EngineModeLayer::OnRender()

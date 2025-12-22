@@ -14,12 +14,10 @@ namespace Audio {
 		Math::Vector3 velocity;
 		bool loopSound = false;
 	public:
-
-
 		AudioSource();
 		~AudioSource();
 
-		void Play(const SoundID p_sound);
+		void Play();
 
 		void Pause();
 
@@ -36,6 +34,8 @@ namespace Audio {
 		void SetVelocity(Math::Vector3 p_velocity);
 
 		void SetLoopSound(bool p_isLooping);
+
+		void SetSound(const char* p_soundName);
 	};
 }
 #endif //ST_AUDIO_SOURCE_H

@@ -10,7 +10,7 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 namespace Rendering {
-	struct RenderObject
+	struct RenderUnit
 	{
 		std::shared_ptr<Mesh> mesh;
 		std::shared_ptr<Material> material;
@@ -19,7 +19,7 @@ namespace Rendering {
 
 	class RenderManager
 	{
-		std::vector<RenderObject*> renderObjects;
+		std::vector<RenderUnit*> renderObjects;
 
 		std::shared_ptr<Camera> activeCamera;
 
@@ -30,9 +30,9 @@ namespace Rendering {
 
 		void Draw();
 
-		void AddToRender(RenderObject* p_mesh);
+		void AddToRender(RenderUnit* p_mesh);
 
-		void RemoveFromRender(RenderObject* p_mesh);
+		void RemoveFromRender(RenderUnit* p_mesh);
 
 		void SetActiveCamera(std::shared_ptr<Camera> p_camera) { activeCamera = std::move(p_camera); }
 

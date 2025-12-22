@@ -26,7 +26,7 @@ namespace Physic {
 	public:
 		virtual ColliderType GetColliderType() const = 0;
 		virtual AABB GetAABB() const = 0;
-
+		virtual void SetPosition(const Math::Vector3& r_pos) = 0;
 	};
 
 	class CollisionDetector
@@ -60,7 +60,12 @@ namespace Physic {
 		{
 			return COLLIDER_SPHERE;
 		}
-		virtual AABB GetAABB() const override;
+
+		void SetPosition(const Math::Vector3& r_pos) override {
+			center = r_pos;
+		}
+
+		AABB GetAABB() const override;
 	};
 	class BoxCollider : public Collider
 	{
@@ -76,6 +81,9 @@ namespace Physic {
 		{
 			return COLLIDER_BOX;
 		}
+		void SetPosition(const Math::Vector3& r_pos) override {
+			center = r_pos;
+		}
 		virtual AABB GetAABB() const override;
 	};
 	class PlaneCollider : public Collider
@@ -90,6 +98,9 @@ namespace Physic {
 		ColliderType GetColliderType() const override
 		{
 			return COLLIDER_PLANE;
+		}
+		void SetPosition(const Math::Vector3& r_pos) override {
+			normal = r_pos.Normalized();
 		}
 		virtual AABB GetAABB() const override;
 	};

@@ -7,7 +7,7 @@ namespace Physic {
 	{
 	public:
 		Matrix3x4* transform;
-		std::unique_ptr<Collider> collider;
+		std::shared_ptr<Collider> collider;
 
 		Math::Vector3 velocity;
 		Math::Vector3 angularVelocity;
@@ -33,6 +33,7 @@ namespace Physic {
 
 		void ApplyForce(const Math::Vector3& p_force) { force += p_force; }
 		void SetVelocity(const Math::Vector3& p_velocity) { velocity = p_velocity; }
+
 	};
 }
 #endif // ST_RIGID_BODY_H

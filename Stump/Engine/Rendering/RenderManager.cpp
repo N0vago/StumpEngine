@@ -43,15 +43,15 @@ namespace Rendering {
 
     }
 
-    void RenderManager::AddToRender(RenderObject* p_renderObject) {
+    void RenderManager::AddToRender(RenderUnit* p_renderObject) {
         if (!p_renderObject)
             return;
         renderObjects.push_back(p_renderObject);
     }
 
-    void RenderManager::RemoveFromRender(RenderObject* p_renderObject) {
+    void RenderManager::RemoveFromRender(RenderUnit* p_renderObject) {
         renderObjects.erase(std::remove_if(renderObjects.begin(), renderObjects.end(),
-            [p_renderObject](RenderObject* renderObject) {
+            [p_renderObject](RenderUnit* renderObject) {
                 return renderObject == p_renderObject;
             }), renderObjects.end());
     }
