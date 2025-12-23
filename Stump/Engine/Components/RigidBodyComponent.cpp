@@ -25,6 +25,9 @@ namespace Components {
 		{
 			body->collider = nullptr;
 		}
+		body->isStatic = isStatic;
+		body->affectedByGravity = affectedByGravity;
+		body->mass = mass;
 
 		Physic::PhysicWorld::Get().AddRigidBody(body);
 	}

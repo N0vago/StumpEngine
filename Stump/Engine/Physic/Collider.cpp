@@ -102,7 +102,7 @@ namespace Physic {
 
 		CollisionPoints cp;
 		cp.hasCollision = true;
-		cp.normal = normal;
+		cp.normal = -normal;
 		cp.penetrationDepth = sphere->radius - std::sqrt(distSq);
 		cp.pointA = sphere->center - normal * sphere->radius;
 		cp.pointB = worldPoint;

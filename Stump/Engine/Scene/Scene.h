@@ -21,11 +21,9 @@ namespace Scene {
         {
             auto node = std::make_shared<T>(ObjectInfo(GenerateID(), r_name), this, std::forward<Args>(r_args)...);
 
-            SceneNode* raw = node.get();
+            root->AddChild(node);
 
-            root->AddChild(std::move(node));
-
-            return std::move(node);
+            return node;
         }
 
         void DestroyNode(SceneNode* p_node);

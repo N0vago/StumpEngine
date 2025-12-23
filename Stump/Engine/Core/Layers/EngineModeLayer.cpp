@@ -54,7 +54,9 @@ namespace Core {
 		lightSphere->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
 
 		auto planeInstance = scene->CreateNode<GameObject>("Plane");
+		planeInstance->transform = plane->modelMatrix;
 		auto lightSphereInstance = scene->CreateNode<GameObject>("Light Sphere");
+		lightSphereInstance->transform = lightSphere->modelMatrix;
 
 		auto planeMesh = planeInstance->AddComponent<Components::MeshRendererComponent>();
 		planeMesh->SetMesh(plane->mesh);
@@ -65,12 +67,14 @@ namespace Core {
 		lightSphereMesh->SetMaterial(lightSphere->material);
 
 		auto boxCollider = planeInstance->AddComponent<Components::BoxColliderComponent>();
-		boxCollider->halfExtents = Vector3(10.0f, 0.1f, 10.0f);
+		boxCollider->halfExtents = Vector3(10.0f, 1.0f, 10.0f);
 
 		auto sphereCollider = lightSphereInstance->AddComponent<Components::SphereColliderComponent>();
 		sphereCollider->radius = 1.0f;
 
 		auto planeRigidBody = planeInstance->AddComponent<Components::RigidBodyComponent>();
+		planeRigidBody->affectedByGravity = false;
+		planeRigidBody->isStatic = true;
 		auto lightSphereRigidBody = lightSphereInstance->AddComponent<Components::RigidBodyComponent>();
 		
 		scene->EnableNodes();

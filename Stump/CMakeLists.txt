@@ -19,8 +19,6 @@ set(STUMP_LIB_DIR     ${CMAKE_SOURCE_DIR}/Libraries)
 set(STUMP_INCLUDE_DIR ${STUMP_LIB_DIR}/include)
 set(STUMP_LIB_BIN     ${STUMP_LIB_DIR}/lib)
 
-
-
 # ---------------- glad ----------------
 add_library(glad STATIC glad.c)
 target_include_directories(glad PUBLIC
@@ -57,10 +55,10 @@ target_link_libraries(Stump PRIVATE
     OpenGL::GL
     OpenAL::OpenAL
     SndFile::sndfile
+    imgui
     glad
     stb
 )
-
 target_include_directories(Stump PRIVATE
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/Engine

@@ -1,5 +1,8 @@
 #include "Core/Application.h"
 
+#include "ThirdParty/imgui/imconfig.h"
+#include "ThirdParty/imgui/backends/imgui_impl_opengl3.h"
+#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
 
 #include <GLFW/glfw3.h>
 
@@ -30,6 +33,18 @@ namespace Core
 		appInfo.WindowInfo.EventCallback = [this](Event& event) { this->RaiseEvent(event); };
 		window = std::make_shared<Window>(appInfo.WindowInfo);
 		window->Create();
+
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		
+
+		ImGui::StyleColorsDark();
+
+		ImGui_ImplGlfw_InitForOpenGL(Application::Get().GetWindow()->GetHandle(), true);
+		ImGui_ImplOpenGL3_Init("#version 460");
 	}
 
 	Application::~Application()

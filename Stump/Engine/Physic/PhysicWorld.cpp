@@ -131,17 +131,15 @@ namespace Physic {
 		auto& bodyA = collision.bodyA;
 		auto& bodyB = collision.bodyB;
 
-		// --- Inverse mass ---
 		float invMassA = bodyA->isStatic ? 0.0f : 1.0f / bodyA->mass;
 		float invMassB = bodyB->isStatic ? 0.0f : 1.0f / bodyB->mass;
 
-		// Если оба статические — ничего не делаем
 		if (invMassA + invMassB == 0.0f)
 			return;
 
-		// --- Positional correction parameters ---
-		const float percent = 0.7f;   // 70% исправления (PhysX style)
-		const float slop = 0.001f;    // допустимая погрешность
+		
+		const float percent = 0.7f;
+		const float slop = 0.001f;   
 
 		float penetration = std::max(cp.penetrationDepth - slop, 0.0f);
 
