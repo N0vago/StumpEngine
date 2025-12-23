@@ -1,10 +1,8 @@
 #include "Core/Application.h"
+#include <ThirdParty/imgui/imconfig.h>
+#include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
+#include <ThirdParty/imgui/backends/imgui_impl_glfw.h>
 
-#include "ThirdParty/imgui/imconfig.h"
-#include "ThirdParty/imgui/backends/imgui_impl_opengl3.h"
-#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
-
-#include <GLFW/glfw3.h>
 
 #include <assert.h>
 #include <iostream>
@@ -36,15 +34,14 @@ namespace Core
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-
 		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  
 
-		
-
-		ImGui::StyleColorsDark();
-
-		ImGui_ImplGlfw_InitForOpenGL(Application::Get().GetWindow()->GetHandle(), true);
-		ImGui_ImplOpenGL3_Init("#version 460");
+		// Setup Platform/Renderer backends
+		ImGui_ImplGlfw_InitForOpenGL(window->GetHandle(), true);
+		ImGui_ImplOpenGL3_Init();
 	}
 
 	Application::~Application()

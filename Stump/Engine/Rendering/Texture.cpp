@@ -1,8 +1,9 @@
 #include "Rendering/Texture.h"
+#include <glad/glad.h>
 #include <filesystem>
 #include <stdexcept>
 namespace Rendering {
-	Texture::Texture(const char* p_image, TextureType p_textureType, GLuint p_slot) {
+	Texture::Texture(const char* p_image, TextureType p_textureType, uint32_t p_slot) {
 		type = p_textureType;
 
 		int widthImage, heightImage, numColCh;

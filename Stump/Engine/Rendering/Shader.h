@@ -2,7 +2,6 @@
 #define ST_SHADER_H
 
 #include "Math/Vector3.h"
-#include<glad/glad.h>
 #include<string>
 #include<fstream>
 #include<sstream>
@@ -16,7 +15,7 @@ namespace Rendering {
 	{
 	public:
 		// Reference ID of the Shader Program
-		GLuint ID;
+		uint32_t ID;
 		// Constructor that build the Shader Program from 2 different shaders
 		Shader(const char* p_vertexFile, const char* p_fragmentFile);
 

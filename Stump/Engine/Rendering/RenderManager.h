@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <memory>
-#include <GLFW/glfw3.h>
 namespace Rendering {
 	struct RenderUnit
 	{

@@ -10,6 +10,9 @@
 #include "Rendering/Shapes/CubeShape.h"
 #include "Audio/AudioListener.h"
 
+#include <ThirdParty/imgui/imconfig.h>
+#include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
+#include <ThirdParty/imgui/backends/imgui_impl_glfw.h>
 #include <memory>
 #include <algorithm>
 
@@ -82,6 +85,9 @@ namespace Core {
 
 	EngineModeLayer::~EngineModeLayer()
 	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	void EngineModeLayer::OnUpdate(float p_ts)
@@ -113,7 +119,13 @@ namespace Core {
 
 	void EngineModeLayer::OnRender()
 	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		ImGui::ShowDemoWindow();
 		RenderManager::Get().Draw();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void EngineModeLayer::OnEvent(Core::Event& event)

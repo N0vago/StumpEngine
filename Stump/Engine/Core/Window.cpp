@@ -4,7 +4,6 @@
 #include "Core/InputEvents.h"
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace Core {
     Window::Window(const WindowInfo& r_windowInfo) : windowInfo(r_windowInfo)

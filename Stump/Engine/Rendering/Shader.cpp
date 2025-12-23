@@ -1,5 +1,8 @@
 #include "Rendering/Shader.h"
 #include "Math/Vector3.h"
+
+#include<glad/glad.h>
+
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -7,7 +10,6 @@ namespace Rendering {
 
 	std::string Shader::GetFileContent(const char* p_filename)
 	{
-
 		std::ifstream in(p_filename, std::ios::binary);
 		if (in)
 		{

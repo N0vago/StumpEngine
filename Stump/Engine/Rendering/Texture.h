@@ -1,7 +1,7 @@
 #ifndef ST_TEXTURE_H
 #define ST_TEXTURE_H
 
-#include <glad/glad.h>
+#include <type_traits>
 #include <stb/stb_image.h>
 namespace Rendering {
 	enum class TextureType {
@@ -14,13 +14,13 @@ namespace Rendering {
 	class Texture
 	{
 	public:
-		GLuint ID;
+		uint32_t ID;
 
 		TextureType type;
 
-		GLuint unit;
+		uint32_t unit;
 
-		Texture(const char* p_image, TextureType p_type, GLuint p_slot);
+		Texture(const char* p_image, TextureType p_type, uint32_t p_slot);
 
 		void Bind();
 

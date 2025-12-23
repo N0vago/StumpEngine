@@ -1,5 +1,6 @@
 ﻿#include "Rendering/RenderManager.h"
 
+#include <GLFW/glfw3.h>
 #include <assert.h>
 #include <algorithm>
 #include <array>

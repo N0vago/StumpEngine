@@ -3,11 +3,12 @@
 
 #include "Core/Event.h"
 #include "Math/Vector2.h"
+#include <GLFW/glfw3.h>
 #include <cstdint>
 #include <string>
 #include <iostream>
+
 using namespace Math;
-class GLFWwindow;
 
 namespace Core {
 	struct WindowInfo
