@@ -55,7 +55,6 @@ target_link_libraries(Stump PRIVATE
     OpenGL::GL
     OpenAL::OpenAL
     SndFile::sndfile
-    imgui
     glad
     stb
 )
@@ -70,6 +69,3 @@ add_custom_target(CopyAssets ALL
 )
 
 add_dependencies(Stump CopyAssets)
-
-
-

@@ -1,7 +1,5 @@
 add_library(Engine)
 
-add_subdirectory(ThirdParty/imgui)
-
 target_sources(Engine PRIVATE
 
     # ---------------- Core ----------------
@@ -66,16 +64,29 @@ target_sources(Engine PRIVATE
     Components/AudioSourceComponent.cpp
     # ---------------- Debug -------------
     Debug/Logger.cpp
+    # ---------------- ThirdParty ----------------
+    ThirdParty/imgui/imgui.cpp
+    ThirdParty/imgui/imgui_draw.cpp
+    ThirdParty/imgui/imgui_tables.cpp
+    ThirdParty/imgui/imgui_widgets.cpp
+    ThirdParty/imgui/imgui_demo.cpp
+    ThirdParty/imgui/backends/imgui_impl_glfw.cpp
+    ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
 )
 target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 	${STUMP_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/backend
 )
 target_link_libraries(Engine PUBLIC
     glfw
     OpenGL::GL
     OpenAL::OpenAL
-    imgui
     glad
 )
-target_compile_definitions(Engine PUBLIC STUMP_ENGINE)
+target_compile_definitions(Engine PUBLIC
+    STUMP_ENGINE
+    IMGUI_IMPL_GLFW_USE_OPENGL3
+    IMGUI_IMPL_OPENGL_LOADER_GLAD
+)
