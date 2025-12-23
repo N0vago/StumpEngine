@@ -1,8 +1,8 @@
 #include "Core/Application.h"
+
 #include <ThirdParty/imgui/imconfig.h>
 #include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
 #include <ThirdParty/imgui/backends/imgui_impl_glfw.h>
-
 
 #include <assert.h>
 #include <iostream>
@@ -46,6 +46,10 @@ namespace Core
 
 	Application::~Application()
 	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+
 		window->Destroy();
 
 		glfwTerminate();

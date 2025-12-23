@@ -87,6 +87,8 @@ target_sources(Engine PRIVATE
     Components/AudioSourceComponent.cpp
     # ---------------- Debug -------------
     Debug/Logger.cpp
+    # ---------------- GUI ---------------
+    GUI/ViewportWindow.cpp
 )
 target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

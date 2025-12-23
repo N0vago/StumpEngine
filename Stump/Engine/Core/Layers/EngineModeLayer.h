@@ -8,6 +8,7 @@
 #include "Physic/PhysicWorld.h"
 #include "Scene/Scene.h"
 #include "Audio/AudioSource.h"
+#include "GUI/ViewportWindow.h"
 using namespace Core;
 using namespace Rendering;
 using namespace Physic;
@@ -22,6 +23,9 @@ namespace Core {
 		std::shared_ptr<Camera> editorCamera;
 		std::shared_ptr<Shader> defaultShader;
 		std::shared_ptr<Shader> lightShader;
+
+		std::unique_ptr<GUI::ViewportWindow> sceneView;
+		std::vector<std::unique_ptr<GUI::GuiWindow>> windows;
 	public:
 		EngineModeLayer();
 		virtual ~EngineModeLayer();

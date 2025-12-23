@@ -4,13 +4,25 @@
 #include "Core/Event.h"
 #include "Core/InputEvents.h"
 #include "Math/Vector2.h"
+
+
 using namespace Math;
 namespace Core {
+
+	enum class EventCategory
+	{
+		None,
+		EventCategoryInput,
+		EventCategoryMouse,
+		EventCategoryKeyboard
+	};
 	class InputManager
 	{
 		bool keys[512];
 
 		bool mouseButtons[8];
+
+		EventCategory currentCategory;
 
 		Vector2 mousePosition;
 
@@ -26,6 +38,11 @@ namespace Core {
 		bool IsKeyPressed(int p_keycode) const { return keys[p_keycode]; }
 
 		bool IsMouseButtonPressed(int p_buttoncode) const { return mouseButtons[p_buttoncode]; }
+
+		bool IsMouseEvent();
+
+		bool IsKeyEvent();
+
 
 		Vector2 GetMousePosition() const { return mousePosition; }
 

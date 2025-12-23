@@ -22,12 +22,21 @@ namespace Rendering {
 
 		std::shared_ptr<Camera> activeCamera;
 
+		uint32_t sceneFBO = 0;
+		uint32_t sceneColorTex = 0;
+		uint32_t sceneDepthRBO = 0;
+
+		uint32_t viewportWidth = 1280;
+		uint32_t viewportHeight = 720;
+
 	public:
 
 		RenderManager();
 		~RenderManager();
 
-		void Draw();
+		void DrawCall();
+
+		void ResizeViewport(uint32_t p_w, uint32_t p_h);
 
 		void AddToRender(RenderUnit* p_mesh);
 
@@ -35,8 +44,11 @@ namespace Rendering {
 
 		void SetActiveCamera(std::shared_ptr<Camera> p_camera) { activeCamera = std::move(p_camera); }
 
-		static RenderManager& Get();
+		uint32_t GetSceneTexture() const { return sceneColorTex; }
 
+		static RenderManager& Get();
+	private:
+		void RenderScene();
 	};
 }
 

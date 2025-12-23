@@ -19,8 +19,8 @@ int main()
 	Audio::AudioDevice audioDevice = Audio::AudioDevice();
 	Audio::AudioBuffer audioBuffer = Audio::AudioBuffer();
 	Audio::AudioListener audioListener = Audio::AudioListener();
-
 	Core::Application application(appInfo);
+
 	application.PushLayer<Core::EngineModeLayer>();
 	application.Run();
     return 0;

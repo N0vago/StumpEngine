@@ -10,9 +10,6 @@
 #include "Rendering/Shapes/CubeShape.h"
 #include "Audio/AudioListener.h"
 
-#include <ThirdParty/imgui/imconfig.h>
-#include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
-#include <ThirdParty/imgui/backends/imgui_impl_glfw.h>
 #include <memory>
 #include <algorithm>
 
@@ -23,13 +20,14 @@ namespace Core {
 		defaultShader(std::make_shared<Shader>("Resources/default.vert", "Resources/default.frag")),
 		lightShader(std::make_shared<Shader>("Resources/light.vert", "Resources/light.frag"))
 	{
-		float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
-		float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
 
-		editorCamera = std::make_shared<Camera>(Camera(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f)));
-		RenderManager::Get().SetActiveCamera(editorCamera);
 		inputManager = std::make_unique<InputManager>(InputManager());
 		scene = std::make_unique<STScene>();
+		sceneView = std::make_unique<GUI::ViewportWindow>("Scene");
+		editorCamera = std::make_shared<Camera>(Camera(sceneView->GetSize().x, sceneView->GetSize().y, Vector3(0.0f, 0.0f, 2.0f)));
+
+		RenderManager::Get().SetActiveCamera(editorCamera);
+		windows.emplace_back(sceneView.get());
 
 		auto diffuseTexture = std::make_shared<Texture>("Resources/planks.png", TextureType::Diffuse, 0);
 		auto specularTexture = std::make_shared<Texture>("Resources/planksSpec.png", TextureType::Specular, 1);
@@ -85,9 +83,7 @@ namespace Core {
 
 	EngineModeLayer::~EngineModeLayer()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		
 	}
 
 	void EngineModeLayer::OnUpdate(float p_ts)
@@ -96,17 +92,20 @@ namespace Core {
 
 		scene->Update(p_ts);
 
-		CameraMove(p_ts);
-
-
-		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+		if (sceneView->IsActive())
 		{
-			CameraRotate(p_ts);
-		}
-		else {
-			glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			CameraMove(p_ts);
 
-			editorCamera->firstClick = true;
+			if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+				CameraRotate(p_ts);
+		}
+		if (sceneView->IsActive() && inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+		{
+			glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else
+		{
+			glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 
 		editorCamera->UpdateMatrix(90.0f, 0.1f, 100.0f);
@@ -122,14 +121,59 @@ namespace Core {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGui::ShowDemoWindow();
-		RenderManager::Get().Draw();
+
+		// === DOCKSPACE ROOT ===
+		static bool dockspaceOpen = true;
+		static bool optFullscreen = true;
+
+		ImGuiWindowFlags dockspaceFlags =
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoBringToFrontOnFocus |
+			ImGuiWindowFlags_NoNavFocus;
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+		ImGui::Begin("DockSpaceRoot", &dockspaceOpen, dockspaceFlags);
+		ImGui::PopStyleVar(2);
+
+		ImGuiID dockspaceID = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0, 0));
+
+		ImGui::End();
+
+		// === DRAW WINDOWS ===
+		for (auto& window : windows)
+			window->Draw();
+
+		RenderManager::Get().DrawCall();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// === MULTI VIEWPORT SUPPORT ===
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup);
+		}
 	}
 
 	void EngineModeLayer::OnEvent(Core::Event& event)
 	{
+		if (!sceneView->IsActive())
+			return;
 		inputManager->ListenEvent(event);
 	}
 	void EngineModeLayer::CameraMove(float& r_deltaTime)
@@ -176,34 +220,25 @@ namespace Core {
 
 	void EngineModeLayer::CameraRotate(float& r_deltaTime) {
 
-		GLFWwindow* window = Core::Application::Get().GetWindow()->GetHandle();
-		Vector2 frameBuffer = Core::Application::Get().GetWindow()->GetFrameBufferSize();
+		ImGuiIO& io = ImGui::GetIO();
 
-		float width = frameBuffer.y;
-		float height = frameBuffer.x;
+		Vector2 delta(io.MouseDelta.x, io.MouseDelta.y);
 
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		float rotX = delta.y * editorCamera->sensitivity * r_deltaTime;
+		float rotY = delta.x * editorCamera->sensitivity * r_deltaTime;
 
-		if (editorCamera->firstClick)
-		{
+		Vector3 right = editorCamera->Orientation.Cross(editorCamera->Up).Normalized();
 
-			glfwSetCursorPos(window, (width / 2), (height / 2));
-			editorCamera->firstClick = false;
-		}
+		Vector3 newOrientation =
+			editorCamera->Orientation.RotatedAroundAxis(right, -rotX);
 
-		float rotX = editorCamera->sensitivity * (float)(inputManager->GetMousePosition().y - (height / 2)) / height * r_deltaTime;
-		float rotY = editorCamera->sensitivity * (float)(inputManager->GetMousePosition().x - (width / 2)) / width * r_deltaTime;
-
-		Vector3 newOrientation = editorCamera->Orientation.RotatedAroundAxis(editorCamera->Orientation.Cross(editorCamera->Up).Normalized(), -rotX);
-
-		if (MathF::Abs(newOrientation.AngleTo(editorCamera->Up) - MathF::ToRadiansf(90.0f)) <= MathF::ToRadiansf(85.0f))
+		if (MathF::Abs(newOrientation.AngleTo(editorCamera->Up) - MathF::ToRadiansf(90.0f))
+			<= MathF::ToRadiansf(85.0f))
 		{
 			editorCamera->Orientation = newOrientation;
 		}
 
 		editorCamera->Orientation.RotateAroundAxis(editorCamera->Up, -rotY);
-
-		glfwSetCursorPos(window, (width / 2), (height / 2));
 	}
 
 }
