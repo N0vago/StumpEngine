@@ -14,8 +14,8 @@ namespace Scene {
 	protected:
 		STScene* owner;
 		SceneNode* parent;
-		std::vector<std::shared_ptr<SceneNode>> children;
 	public:
+		std::vector<std::shared_ptr<SceneNode>> children;
 
 		Math::Matrix3x4 transform;
 

@@ -64,8 +64,8 @@ target_include_directories(Stump PRIVATE
 )
 add_custom_target(CopyAssets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/Engine/Resources
-        $<TARGET_FILE_DIR:Stump>/Resources
+        ${CMAKE_SOURCE_DIR}/Engine/Assets
+        $<TARGET_FILE_DIR:Stump>/Assets
 )
 
 add_dependencies(Stump CopyAssets)

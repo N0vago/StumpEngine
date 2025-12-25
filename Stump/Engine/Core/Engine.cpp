@@ -1,8 +1,11 @@
-#include "Core/Application.h"
+#include "Core/Engine.h"
 
 #include <ThirdParty/imgui/imconfig.h>
 #include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
 #include <ThirdParty/imgui/backends/imgui_impl_glfw.h>
+
+#include "Core/Layers/EditorModeLayer.h"
+#include "Core/Layers/PlayModeLayer.h"
 
 #include <assert.h>
 #include <iostream>
@@ -11,14 +14,14 @@
 namespace Core
 {
 
-	static Application* Instance = nullptr;
+	static Engine* Instance = nullptr;
 
 	static void GLFWErrorCallback(int p_error, const char* p_description)
 	{
 		std::cerr << "GLFW Error (" << p_error << "): " << p_description << std::endl;
 	}
 
-	Application::Application(const AppInfo& r_appInfo) : appInfo(r_appInfo)
+	Engine::Engine(const EngineInfo& r_appInfo) : appInfo(r_appInfo)
 	{
 		Instance = this;
 
@@ -32,6 +35,8 @@ namespace Core
 		window = std::make_shared<Window>(appInfo.WindowInfo);
 		window->Create();
 
+		initialScene = std::make_unique<Scene::STScene>();
+
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
@@ -44,7 +49,7 @@ namespace Core
 		ImGui_ImplOpenGL3_Init();
 	}
 
-	Application::~Application()
+	Engine::~Engine()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -57,7 +62,7 @@ namespace Core
 		Instance = nullptr;
 	}
 
-	void Application::Run() {
+	void Engine::Run() {
 		running = true;
 
 		float lastFrameTime = GetTime();
@@ -84,11 +89,11 @@ namespace Core
 		}
 	}
 
-	void Application::Stop() {
+	void Engine::Stop() {
 		running = false;
 	}
 
-	void Application::RaiseEvent(Event& r_event) {
+	void Engine::RaiseEvent(Event& r_event) {
 		for (auto& layer : std::views::reverse(layerStack)) {
 			layer->OnEvent(r_event);
 			if (r_event.Handled)
@@ -96,16 +101,35 @@ namespace Core
 		}
 	}
 
-	Vector2 Application::GetFrameBufferSize() const {
+	void Engine::SetEngineState(EngineState p_state) {
+		if (engineState == p_state)
+			return;
+
+		engineState = p_state;
+
+		auto editorLayer = GetLayer<EditorModeLayer>();
+		if (p_state == EngineState::Play)
+		{
+			GetLayer<EditorModeLayer>()->TransitionTo<PlayModeLayer>(initialScene.get());
+		}
+		else
+		{
+			
+			GetLayer<PlayModeLayer>()->TransitionTo<EditorModeLayer>();
+			
+		}
+	}
+
+	Vector2 Engine::GetFrameBufferSize() const {
 		return window->GetFrameBufferSize();
 	}
 
-	Application& Application::Get() {
+	Engine& Engine::Get() {
 		assert(Instance && "Application instance does not exist!");
 		return *Instance;
 	}
 
-	float Application::GetTime() {
+	float Engine::GetTime() {
 		return (float)glfwGetTime();
 	}
 

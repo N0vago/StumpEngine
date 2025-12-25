@@ -26,11 +26,13 @@ add_library(Engine)
 target_sources(Engine PRIVATE
 
     # ---------------- Core ----------------
-    Core/Application.cpp
+    Core/Engine.cpp
     Core/InputManager.cpp
     Core/Layer.cpp
     Core/Window.cpp
-    Core/Layers/EngineModeLayer.cpp
+    Core/Layers/EditorModeLayer.cpp
+    Core/Layers/GuiLayer.cpp
+    Core/Layers/PlayModeLayer.cpp
 
     # ---------------- Math ----------------
     Math/AABB.cpp
@@ -73,7 +75,6 @@ target_sources(Engine PRIVATE
 
     # ---------------- Utility ----------------
     Utility/ModelData.cpp
-
     # ---------------- Audio ------------------
     Audio/AudioDevice.cpp
     Audio/AudioBuffer.cpp
@@ -89,6 +90,9 @@ target_sources(Engine PRIVATE
     Debug/Logger.cpp
     # ---------------- GUI ---------------
     GUI/ViewportWindow.cpp
+    GUI/LogWindow.cpp
+    GUI/HierarchyWindow.cpp
+    GUI/FileSystemWindow.cpp
 )
 target_include_directories(Engine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

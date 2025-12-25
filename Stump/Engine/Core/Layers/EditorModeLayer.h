@@ -1,34 +1,29 @@
-#ifndef ST_ENGINE_LAYER_H
-#define ST_ENGINE_LAYER_H
+#ifndef ST_EDITOR_LAYER_H
+#define ST_EDITOR_LAYER_H
 
 
-#include "Core/Application.h"
+#include "Core/Engine.h"
 #include "Core/InputManager.h"
 #include "Rendering/RenderManager.h"
 #include "Physic/PhysicWorld.h"
 #include "Scene/Scene.h"
 #include "Audio/AudioSource.h"
-#include "GUI/ViewportWindow.h"
+#include "Debug/Logger.h"
+
 using namespace Core;
 using namespace Rendering;
 using namespace Physic;
 using namespace Scene;
 
 namespace Core {
-	class EngineModeLayer : public Core::Layer
+	class EditorModeLayer : public Core::Layer
 	{
-		std::unique_ptr<InputManager> inputManager;
-		std::unique_ptr<STScene> scene;
-
 		std::shared_ptr<Camera> editorCamera;
-		std::shared_ptr<Shader> defaultShader;
-		std::shared_ptr<Shader> lightShader;
-
-		std::unique_ptr<GUI::ViewportWindow> sceneView;
-		std::vector<std::unique_ptr<GUI::GuiWindow>> windows;
+		std::unique_ptr<InputManager> inputManager;
+		STScene* scene;
 	public:
-		EngineModeLayer();
-		virtual ~EngineModeLayer();
+		EditorModeLayer();
+		virtual ~EditorModeLayer();
 
 		virtual void OnUpdate(float p_ts) override;
 		virtual void OnRender() override;
@@ -42,5 +37,5 @@ namespace Core {
 
 	};
 }
-#endif // ST_ENGINE_LAYER_H
+#endif // ST_EDITOR_LAYER_H
 

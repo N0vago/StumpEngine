@@ -1,12 +1,12 @@
 #include "Components/CameraComponent.h"
-#include "Core/Application.h"
+#include "Core/Engine.h"
 #include "Rendering/RenderManager.h"
 namespace Components {
 
 	CameraComponent::CameraComponent() : Component(ComponentInfo{ .name = "Camera", .category = "Camera", .allowMultiple = false, .removable = true })
 	{
-		float windowWidth = Core::Application::Get().GetWindow()->GetFrameBufferSize().x;
-		float windowHeight = Core::Application::Get().GetWindow()->GetFrameBufferSize().y;
+		float windowWidth = Core::Engine::Get().GetWindow()->GetFrameBufferSize().x;
+		float windowHeight = Core::Engine::Get().GetWindow()->GetFrameBufferSize().y;
 
 		camera = std::make_shared<Rendering::Camera>(windowWidth, windowHeight, Vector3(0.0f, 0.0f, 2.0f));
 		FOVdeg = 90.0f;
