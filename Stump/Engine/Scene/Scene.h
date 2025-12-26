@@ -45,9 +45,24 @@ namespace Scene {
 
             return nullptr;
         }
+        template<typename Func>
+        void ForEachNode(Func&& r_fn)
+        {
+            if (!root) return;
+            ForEachNodeImpl(*root, r_fn);
+        }
 
         SceneNode* GetRoot() { return root.get(); }
     private:
+        template<typename Func>
+        void ForEachNodeImpl(SceneNode& r_node, Func& r_fn)
+        {
+            r_fn(r_node);
+            for (auto& child : r_node.children)
+            {
+                ForEachNodeImpl(*child, r_fn);
+            }
+        }
         int GenerateID();
 	};
 }

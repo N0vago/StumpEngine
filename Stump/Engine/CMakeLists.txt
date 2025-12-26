@@ -65,6 +65,7 @@ target_sources(Engine PRIVATE
     Rendering/RenderManager.cpp
     Rendering/Shader.cpp
     Rendering/Texture.cpp
+    Rendering/LightSystem.cpp
 
     # ---------------- Scene ----------------
     Scene/Scene.cpp

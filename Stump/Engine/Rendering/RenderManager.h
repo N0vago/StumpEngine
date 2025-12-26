@@ -4,6 +4,7 @@
 #include "Rendering/Material.h"
 #include "Rendering/Mesh.h"
 #include "Rendering/Camera.h"
+#include "Rendering/LightSystem.h"
 #include "Math/Matrix3x4.h"
 
 #include <iostream>
@@ -21,6 +22,8 @@ namespace Rendering {
 		std::vector<RenderUnit*> renderObjects;
 
 		std::shared_ptr<Camera> activeCamera;
+
+		std::shared_ptr<LightSystem> lightSystem;
 
 		uint32_t sceneFBO = 0;
 		uint32_t sceneColorTex = 0;

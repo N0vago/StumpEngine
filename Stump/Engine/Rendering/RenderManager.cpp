@@ -1,4 +1,5 @@
 ﻿#include "Rendering/RenderManager.h"
+#include "Core/Engine.h"
 
 #include <ThirdParty/imgui/imconfig.h>
 #include <ThirdParty/imgui/backends/imgui_impl_opengl3.h>
@@ -16,6 +17,7 @@ namespace Rendering {
     RenderManager::RenderManager()
     {
         Instance = this;
+        lightSystem = std::make_shared<LightSystem>();
     }
 
     RenderManager::~RenderManager()
@@ -34,6 +36,37 @@ namespace Rendering {
         RenderScene();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void RenderManager::RenderScene() {
+        if (!activeCamera)
+            return;
+        lightSystem->Collect(*Core::Engine::Get().GetScene());
+
+        glEnable(GL_DEPTH_TEST);
+
+        glClearColor(0.26f, 0.11f, 0.32f, 1.0f);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        for (auto& renderObject : renderObjects)
+        {
+            if (renderObjects.size() == 0) break;
+            Shader& shader = *renderObject->material->GetShader();
+
+            shader.Activate();
+
+            shader.SetMat4("camMatrix", activeCamera->cameraMatrix.ToArray(), false, true);
+            shader.SetVec3("camPos", activeCamera->Position, true);
+            shader.SetMat4("model", renderObject->modelMatrix.ToRenderMatrix(), true, true);
+
+            lightSystem->Upload(shader);
+
+            renderObject->material->Bind();
+
+            renderObject->mesh->Draw();
+
+        }
     }
     void RenderManager::ResizeViewport(uint32_t p_w, uint32_t p_h) {
         if (p_w == 0 || p_h == 0)
@@ -99,32 +132,6 @@ namespace Rendering {
                 return renderObject == p_renderObject;
             }), renderObjects.end());
     }
-
-    void RenderManager::RenderScene() {
-        if (!activeCamera)
-            return;
-
-        glEnable(GL_DEPTH_TEST);
-
-        glClearColor(0.26f, 0.11f, 0.32f, 1.0f);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        for (auto& renderObject : renderObjects)
-        {
-            if (renderObjects.size() == 0) break;
-
-            renderObject->material->Bind();
-
-            renderObject->material->GetShader()->SetMat4("camMatrix", activeCamera->cameraMatrix.ToArray(), false, true);
-            renderObject->material->GetShader()->SetVec3("camPos", activeCamera->Position, true);
-            renderObject->material->GetShader()->SetMat4("model", renderObject->modelMatrix.ToRenderMatrix(), true, true);
-
-            renderObject->mesh->Draw();
-
-        }
-    }
-
     RenderManager& RenderManager::Get()
     {
         assert(Instance && "RenderManager instance does not exist!");

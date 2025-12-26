@@ -1,69 +1,89 @@
 #ifndef ST_DEFAULT_SCENE_FACTORY_H
 #define ST_DEFAULT_SCENE_FACTORY_H
+
 #include "Scene/Scene.h"
 #include "Scene/GameObject.h"
+
 #include "Components/MeshRendererComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Components/ColliderComponent.h"
+#include "Components/LightComponent.h"
+
 #include "Rendering/Shapes/PlaneShape.h"
 #include "Rendering/Shapes/SphereShape.h"
-#include "Rendering/Shapes/CubeShape.h"
-#include "Audio/AudioListener.h"
+#include "Rendering/Material.h"
+#include "Rendering/Shader.h"
+#include "Rendering/Texture.h"
 
-class DefaultSceneFactory {
+#include "Tests/PerformanceTest.h"
+
+class DefaultSceneFactory
+{
 public:
     static void Create(Scene::STScene* p_scene)
     {
-		auto diffuseTexture = std::make_shared<Rendering::Texture>("Assets/planks.png", TextureType::Diffuse, 0);
-		auto specularTexture = std::make_shared<Rendering::Texture>("Assets/planksSpec.png", TextureType::Specular, 1);
 
-		Vector3 lightColor = Vector3(1.0f, 1.0f, 1.0f);
-		Vector3 lightPos = Vector3(0.0f, 5.0f, 0.0f);
+        auto diffuseTexture = std::make_shared<Rendering::Texture>(
+            "Assets/planks.png", TextureType::Diffuse, 0);
 
-		auto plane = std::make_shared<Rendering::RenderUnit>();
-		plane->material = std::make_shared<Rendering::Material>(std::make_shared<Rendering::Shader>("Assets/default.vert", "Assets/default.frag"));
-		plane->material->SetFloat3("lightPos", lightPos.x, lightPos.y, lightPos.z);
-		plane->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
-		plane->material->SetTexture(diffuseTexture);
-		plane->material->SetTexture(diffuseTexture);
-		plane->mesh = std::make_shared<Rendering::PlaneShape>(10.0f, 10.0f);
-		plane->modelMatrix = Matrix3x4();
-		plane->modelMatrix.Translate(Vector3(0.0f, 1.0f, 0.0f));
-		plane->modelMatrix.Rotate(Vector3(0.0f, MathF::ToRadians(90.0f), 0.0f));
-		plane->modelMatrix.Scale(Vector3(1.f, 0.0f, 1.0f));
+        auto specularTexture = std::make_shared<Rendering::Texture>(
+            "Assets/planksSpec.png", TextureType::Specular, 1);
 
-		auto lightSphere = std::make_shared<Rendering::RenderUnit>();
-		lightSphere->material = std::make_shared<Rendering::Material>(std::make_shared<Rendering::Shader>("Assets/light.vert", "Assets/light.frag"));
-		lightSphere->mesh = std::make_shared<Rendering::SphereShape>(1.0f, 18, 9);
-		lightSphere->modelMatrix = Matrix3x4();
-		lightSphere->modelMatrix.Translate(lightPos);
-		lightSphere->material->SetFloat4("lightColor", lightColor.x, lightColor.y, lightColor.z, 1);
+        auto defaultMaterial = std::make_shared<Rendering::Material>(
+            std::make_shared<Rendering::Shader>(
+                "Assets/default.vert",
+                "Assets/default.frag"));
 
-		auto planeInstance = p_scene->CreateNode<Scene::GameObject>("Plane");
-		planeInstance->transform = plane->modelMatrix;
-		auto lightSphereInstance = p_scene->CreateNode<Scene::GameObject>("Light Sphere");
-		lightSphereInstance->transform = lightSphere->modelMatrix;
+        defaultMaterial->SetTexture(diffuseTexture);
+        defaultMaterial->SetTexture(specularTexture);
 
-		auto planeMesh = planeInstance->AddComponent<Components::MeshRendererComponent>();
-		planeMesh->SetMesh(plane->mesh);
-		planeMesh->SetMaterial(plane->material);
+        auto planeGO = p_scene->CreateNode<Scene::GameObject>("Plane");
 
-		auto lightSphereMesh = lightSphereInstance->AddComponent<Components::MeshRendererComponent>();
-		lightSphereMesh->SetMesh(lightSphere->mesh);
-		lightSphereMesh->SetMaterial(lightSphere->material);
+        planeGO->transform.Translate(Math::Vector3(0.0f, 1.0f, 0.0f));
+        planeGO->transform.Rotate(Math::Vector3(0.0f, MathF::ToRadians(90.0f), 0.0f));
+        planeGO->transform.Scale(Math::Vector3(10.0f, 1.0f, 10.0f));
 
-		auto boxCollider = planeInstance->AddComponent<Components::BoxColliderComponent>();
-		boxCollider->halfExtents = Vector3(10.0f, 1.0f, 10.0f);
+        auto* planeMesh = planeGO->AddComponent<Components::MeshRendererComponent>();
+        planeMesh->SetMesh(std::make_shared<Rendering::PlaneShape>(10.0f, 10.0f));
+        planeMesh->SetMaterial(defaultMaterial);
 
-		auto sphereCollider = lightSphereInstance->AddComponent<Components::SphereColliderComponent>();
-		sphereCollider->radius = 1.0f;
+        auto* planeCollider = planeGO->AddComponent<Components::BoxColliderComponent>();
+        planeCollider->halfExtents = { 10.0f, 1.0f, 10.0f };
 
-		auto planeRigidBody = planeInstance->AddComponent<Components::RigidBodyComponent>();
-		planeRigidBody->affectedByGravity = false;
-		planeRigidBody->isStatic = true;
-		auto lightSphereRigidBody = lightSphereInstance->AddComponent<Components::RigidBodyComponent>();
+        auto* planeRB = planeGO->AddComponent<Components::RigidBodyComponent>();
+        planeRB->isStatic = true;
+        planeRB->affectedByGravity = false;
+
+        auto lightGO = p_scene->CreateNode<Scene::GameObject>("Point Light");
+        lightGO->transform.Translate({ 0.0f, 5.0f, 0.0f });
+
+        auto* light = lightGO->AddComponent<Components::LightComponent>();
+        light->type = Components::LightType::Directional;
+        light->color = { 1.0f, 1.0f, 1.0f };
+        light->intensity = 0.5f;
+        light->range = 15.0f;
+
+        auto lightDebugMaterial = std::make_shared<Rendering::Material>(
+            std::make_shared<Rendering::Shader>(
+                "Assets/light.vert",
+                "Assets/light.frag"));
+
+        lightDebugMaterial->SetFloat4(
+            "lightColor", 1.0f, 1.0f, 1.0f, 1.0f);
+
+        auto* lightMesh = lightGO->AddComponent<Components::MeshRendererComponent>();
+        lightMesh->SetMesh(
+            std::make_shared<Rendering::SphereShape>(0.5f, 16, 8));
+        lightMesh->SetMaterial(lightDebugMaterial);
+
+        auto* lightCollider = lightGO->AddComponent<Components::SphereColliderComponent>();
+        lightCollider->radius = 0.5f;
+
+        auto* lightRB = lightGO->AddComponent<Components::RigidBodyComponent>();
+        lightRB->affectedByGravity = false;
+
+        PerformanceTestRunner::RunRenderOnly(p_scene, lightDebugMaterial, 10);
     }
 };
 
-
-#endif //ST_DEFAULT_SCENE_FACTORY_H
+#endif // ST_DEFAULT_SCENE_FACTORY_H
