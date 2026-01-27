@@ -33,7 +33,8 @@ namespace Core {
 		Debug::Logger::Get()->Clear();
 		Debug::Logger::Get()->Info(std::to_string(Math::MathF::Round(1.0f / p_ts)));
 
-
+		scene->Update(p_ts);
+		Physic::PhysicWorld::Get().StepSimulation(p_ts);
 		if (Core::Engine::Get().GetLayer<Core::GuiLayer>()->GetViewportWindow()->IsActive())
 		{
 			CameraMove(p_ts);

@@ -100,7 +100,7 @@ namespace Physic {
 			return COLLIDER_PLANE;
 		}
 		void SetPosition(const Math::Vector3& r_pos) override {
-			normal = r_pos.Normalized();
+			
 		}
 		virtual AABB GetAABB() const override;
 	};

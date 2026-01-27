@@ -22,6 +22,7 @@ int main()
 	engineInfo.Name = "Stump Engine";
 	engineInfo.WindowInfo.Width = 1920;
 	engineInfo.WindowInfo.Height = 1080;
+	engineInfo.WindowInfo.VSync = false;
 	Core::Engine engine(engineInfo);
 
 	engine.PushLayer<Core::GuiLayer>();
